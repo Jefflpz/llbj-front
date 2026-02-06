@@ -1,4 +1,4 @@
-import '../styles/login.css';
+import '../styles/Login.css';
 
 export default function Login() {
     return (
