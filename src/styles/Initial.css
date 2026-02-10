@@ -9,6 +9,7 @@
 .initial-page {
     background-color: #F1F1F1;
     font-family: "DM Sans";
+    min-height: 120vh;
 }
 
 .initial-card {
@@ -21,14 +22,15 @@
    align-self: flex-start;
    margin-left: 20px;
    margin-top: 20px;
+   width: 15vh;
 }
 
 .initial-card h1 {
     font-size: 50px;
-    height: 50px;
+    height: 30px;
 }
 .initial-card p {
-    font-size: 30px;
+    font-size: 25px;
     text-align: center;
 }
 
@@ -66,4 +68,23 @@
 .texto-escola {
     width: 150vh;
     height: 30px;
+}
+
+.info-card {
+    position: relative;
+}
+
+.bag {
+    position: absolute;
+    z-index: 10;
+    width: 15vh;
+}
+
+.bag1 {
+    top: 90px;
+}
+
+.bag2 {
+    top: -30px;
+    right: 10px;
 }

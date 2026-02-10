@@ -25,7 +25,11 @@ export default function Initial() {
                     <img src="/adolescente.png" alt="Adolescente com livro" className="adolescente"/> 
                 </div>
             </div>
-            <InformationCard></InformationCard>
+            <div className="info-card">
+                <InformationCard></InformationCard>
+                <img src="/Bag.svg" alt="Mochila" className="bag bag1"/>
+                <img src="/Study bag.svg" alt="Mochila 2" className="bag bag2"/>
+            </div>
         </div>
     );
 }
