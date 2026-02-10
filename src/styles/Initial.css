@@ -1,0 +1,70 @@
+@font-face {
+    font-family: "DM Sans";
+    src: url("fonts/DMSans-VariableFont_opsz,wght.ttf") format(truetype);
+    font-weight: normal;
+    font-size: normal;
+ }
+
+
+.initial-page {
+    background-color: #F1F1F1;
+    font-family: "DM Sans";
+}
+
+.initial-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#logo-escola {
+   align-self: flex-start;
+   margin: 20px;
+}
+
+.initial-card h1 {
+    font-size: 50px;
+}
+.initial-card p {
+    font-size: 30px;
+    text-align: center;
+}
+
+#coruja-foto {
+    height: 150px;
+    width: auto;
+}
+
+#criancas {
+    align-self: flex-start;
+    height: 50vh;
+    width: auto;
+    margin: 30px;
+}
+
+#adolescente {
+    align-self: flex-end;
+    height: 50vh;
+    width: auto;
+    margin: 30px;
+}
+
+.container {
+    display: flex;
+}
+
+.initial-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.information-card {
+    display: inline-block;
+    background-color: #FF8943;
+}
+
+.students {
+    display: block;
+}
