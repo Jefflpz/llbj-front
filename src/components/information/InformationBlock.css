@@ -1,0 +1,22 @@
+.info-block img {
+    width: 10vh;
+    margin-right: 10px;
+}
+
+.info-block p {
+    margin: 10px;
+}
+
+.info-block span {
+    display: flex;
+    align-items: center;
+}
+
+.info-block #number {
+    font-size: 50px;
+    font-weight: bolder;
+}
+
+.info-block #text {
+    font-size: 25px;
+}
