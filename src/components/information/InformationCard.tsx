@@ -1,4 +1,4 @@
-import "./Information-card.css";
+import "./InformationCard.css";
 import InformationBlock from "./InformationBlock";
 export default function InformationCard() {
     return (
