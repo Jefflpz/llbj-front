@@ -17,7 +17,7 @@
     align-items: center;
 }
 
-#logo-escola {
+.logo-escola {
    align-self: flex-start;
    margin-left: 20px;
    margin-top: 20px;
@@ -32,20 +32,20 @@
     text-align: center;
 }
 
-#coruja-foto {
+.coruja-foto {
     height: 150px;
     width: auto;
     margin: 10px;
 }
 
-#criancas {
+.criancas {
     align-self: flex-start;
     height: 50vh;
     width: auto;
     margin: 30px;
 }
 
-#adolescente {
+.adolescente {
     align-self: flex-end;
     height: 50vh;
     width: auto;
@@ -63,7 +63,7 @@
     flex-direction: column;
 }
 
-#texto-escola {
+.texto-escola {
     width: 150vh;
     height: 30px;
 }
