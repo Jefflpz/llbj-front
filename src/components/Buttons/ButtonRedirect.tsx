@@ -1,4 +1,4 @@
-import "./Button-redirect.css";
+import "./ButtonRedirect.css";
 import { Link } from "react-router-dom";
 
 interface ButtonRedirectProps {

@@ -1,4 +1,4 @@
-import './Information-block.css';
+import './InformationBlock.css';
 
 interface Information {
     image: string;
