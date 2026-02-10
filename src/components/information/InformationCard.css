@@ -1,0 +1,12 @@
+.information-card {
+    display: flex;
+    background-color: rgba(255, 137, 67, 0.5);
+    filter: drop-shadow(2px 6px 15px rgba(188, 70, 0, 0.4));
+    border-radius: 20px;
+    padding: 30px;
+    height: 20vh;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin: 20px auto;
+}
