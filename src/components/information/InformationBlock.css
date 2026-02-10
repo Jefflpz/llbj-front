@@ -12,11 +12,11 @@
     align-items: center;
 }
 
-.info-block #number {
+.number {
     font-size: 50px;
     font-weight: bolder;
 }
 
-.info-block #text {
+.text {
     font-size: 25px;
 }

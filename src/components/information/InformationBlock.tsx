@@ -12,9 +12,9 @@ export default function InformationBlock({ image, desc, num, text }: Information
         <div className="info-block">
             <span>
                 <img src={image} alt={desc} />
-                <p id="number">{num}</p>
+                <p className="number">{num}</p>
             </span>
-            <p id="text">{text}</p>
+            <p className="text">{text}</p>
         </div>
     )
 }
