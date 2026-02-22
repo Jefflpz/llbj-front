@@ -1,0 +1,52 @@
+.schedule-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 5px;
+  text-align: center;
+}
+
+.schedule-table th {
+  color: #a3aed0;
+  font-weight: 500;
+  padding: 10px;
+  font-size: 0.85rem;
+}
+
+.time-col {
+  color: #1b2559;
+  font-weight: 700;
+  font-size: 0.9rem;
+  background: #f4f7fe;
+  border-radius: 10px;
+  padding: 10px;
+  width: 80px;
+}
+
+.lesson-box {
+  padding: 8px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  min-height: 50px;
+}
+
+.subject-name {
+  color: #1b2559;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.teacher-name {
+  color: #707eae;
+  font-size: 0.7rem;
+}
+
+.empty-cell {
+  color: #e9edf7;
+}
+
+.no-lesson {
+  font-size: 0.8rem;
+}

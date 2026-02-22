@@ -1,22 +1,22 @@
 .info-block img {
-    width: 10vh;
-    margin-right: 10px;
+  width: 10vh;
+  margin-right: 10px;
 }
 
 .info-block p {
-    margin: 10px;
+  margin: 10px;
 }
 
 .info-block span {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .number {
-    font-size: 40px;
-    font-weight: bolder;
+  font-size: 40px;
+  font-weight: bolder;
 }
 
 .text {
-    font-size: 25px;
+  font-size: 25px;
 }
