@@ -1,73 +1,73 @@
 .login-page {
-    background-image: url('../../public/escola-background.svg');
-    background-size: cover;
-    background-position: center;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-blend-mode: darken;
+  background-image: url('../../escola-background.svg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-blend-mode: darken;
 }
 
-.login-card-login {
-    width: 90%;
-    height: 50%;
-    max-width: 400px;
-    background-color: #F8F9FE;
-    padding: 50px;
-    border-radius: 25px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    justify-content: center;
-    font-family: "Poppins", sans-serif;
+.login-card {
+  width: 90%;
+  height: 50%;
+  max-width: 400px;
+  background-color: #f8f9fe;
+  padding: 50px;
+  border-radius: 25px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
 }
 
-.login-card-login form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
+.login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
 }
 
-.login-card-login img {
-    margin-bottom: 30px;
-    width: 120px;
+.login-card img {
+  margin-bottom: 30px;
+  width: 120px;
 }
 
-.login-card-login input {
-    width: 90%;
-    padding: 12px 20px;
-    border: 2px solid #1A6CA5;
-    border-radius: 30px 30px 0px 30px;
-    background-color: #E1EEF7;
-    font-size: 14px;
-    outline: none;
-    color: #515151;
+.login-card input {
+  width: 90%;
+  padding: 12px 20px;
+  border: 2px solid #1a6ca5;
+  border-radius: 30px 30px 0px 30px;
+  background-color: #e1eef7;
+  font-size: 14px;
+  outline: none;
+  color: #515151;
 }
 
-.login-card-login input::placeholder {
-    color: #8E9AAF;
+.login-card input::placeholder {
+  color: #8e9aaf;
 }
 
-.login-card-login button {
-    width: 70%;
-    padding: 12px;
-    background-color: #7CD054;
-    color: white;
-    border: none;
-    border-radius: 0px 20px 0px 20px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
+.login-card button {
+  width: 70%;
+  padding: 12px;
+  background-color: #7cd054;
+  color: white;
+  border: none;
+  border-radius: 0px 20px 0px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.login-card-login button:hover {
-    background-color: #198049;
+.login-card button:hover {
+  background-color: #198049;
 }
 
-.login-card-login a {
-    text-decoration: none;
-    color: #4692C6;
-    font-size: 13px;
-    font-weight: 500;
+.login-card a {
+  text-decoration: none;
+  color: #4692c6;
+  font-size: 13px;
+  font-weight: 500;
 }
