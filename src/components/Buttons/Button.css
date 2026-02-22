@@ -1,0 +1,40 @@
+.blue-gradient {
+    background-image: linear-gradient(to right, #4692C6, #6366F1);
+    padding: 10px;
+    color: #ffffff;
+    width: 9vh;
+    border-radius: 30px;
+    text-align: center;
+    font-weight: 500;
+    filter: drop-shadow(5px 5px 10px rgba(67, 67, 255, 0.2));
+}
+
+.green-gradient {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-image: linear-gradient(to right, #7CD054, #3C85EC);
+    padding: 10px;
+    color: #ffffff;
+    width: 25vh;
+    border-radius: 40px;
+    font-weight: 500;
+    font-size: 25px;
+    height: 6vh;
+}
+
+.white {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: #ffffff;
+    padding: 10px;
+    color: #0F172A;
+    width: 25vh;
+    border-radius: 40px;
+    font-weight: 500;
+    font-size: 25px;
+    height: 6vh;
+}
