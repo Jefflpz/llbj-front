@@ -3,26 +3,23 @@ import { useState } from 'react';
 import { authService } from '../services/auth.service';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { ArrowLeft, AtSign, Lock, Eye, EyeOff, GraduationCap } from 'lucide-react';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       const res = await authService.login({ username, password });
-
       login(res.data);
-
-      const role = res.data.role;
-
-      if (role === 'ADMIN') navigate('/admin');
-      if (role === 'TEACHER') navigate('/teacher');
-      if (role === 'STUDENT') navigate('/students');
+      if (res.data.role === 'ADMIN') navigate('/admin');
+      if (res.data.role === 'TEACHER') navigate('/teacher');
+      if (res.data.role === 'STUDENT') navigate('/students');
     } catch (err) {
       console.error('Erro no login:', err);
       alert('Usuário ou senha inválidos');
@@ -31,27 +28,80 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      <div className="login-card">
-        <form onSubmit={handleLogin}>
-          <img src="/llbj-logo.svg" alt="Logo Colégio" />
+      <button className="back-button" onClick={() => navigate('/initial')}>
+        <ArrowLeft size={20} />
+      </button>
 
-          <input
-            type="text"
-            placeholder="Digite seu usuário"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+      <div className="login-container">
+        {/* Formulário */}
+        <div className="login-form-side">
+          <div className="login-header">
+            <img src="/owl.svg" alt="Logo" className="logo" />
+            <h1>Bem-vindo!</h1>
+            <p>Gerencie sua jornada educacional de forma inteligente.</p>
+          </div>
 
-          <input
-            type="password"
-            placeholder="Digite sua senha"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <form onSubmit={handleLogin} className="login-form">
+            <div className="input-group">
+              <label>E-mail</label>
+              <div className="input-field">
+                <AtSign size={18} className="input-icon" />
+                <input
+                  type="text"
+                  placeholder="exemplo@escola.com"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
 
-          <button type="submit">Fazer Login</button>
-          <a href="#">1° Acesso? Clique aqui!</a>
-        </form>
+            <div className="input-group">
+              <label>
+                Senha
+                <a href="#">Esqueceu a senha?</a>
+              </label>
+              <div className="input-field">
+                <Lock size={18} className="input-icon" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Sua senha secreta"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="toggle-password"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" className="btn-primary">Entrar</button>
+
+            <div className="divider">Ainda não acessou?</div>
+
+            <button type="button" className="btn-secondary">
+              Primeiro Acesso
+            </button>
+          </form>
+
+          <div className="login-footer">
+            Não tem uma conta? <a href="#">Entre em contato.</a>
+          </div>
+        </div>
+
+        {/* Imagem (Hero) */}
+        <div className="login-image-side">
+          <div className="glass-card">
+            <GraduationCap size={40} className="glass-icon" />
+            <h2>Potencialize o Futuro</h2>
+            <p>Acesse as melhores ferramentas de gestão escolar. Tudo em um só lugar.</p>
+          </div>
+        </div>
       </div>
     </div>
   );
