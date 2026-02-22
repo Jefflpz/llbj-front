@@ -6,6 +6,6 @@ interface ButtonProps {
 }
 export default function Button({ title, style }: ButtonProps) {
     return (
-        <p className={style}>{title}</p>
+        <p className={style} id='button'>{title}</p>
     )
 }
