@@ -17,7 +17,7 @@ export default function Login() {
     try {
       const res = await authService.login({ username, password });
       login(res.data);
-      if (res.data.role === 'ADMIN') navigate('/admin');
+      if (res.data.role === 'ADMIN') navigate('/admin/timetable');
       if (res.data.role === 'TEACHER') navigate('/teacher');
       if (res.data.role === 'STUDENT') navigate('/students');
     } catch (err) {

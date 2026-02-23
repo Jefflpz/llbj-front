@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .login-page {
-  background: linear-gradient(135deg, #f7e6db 0%, #edf1fa 50%, #e6f7ec 100%);
+  background: transparent;
   min-height: 100vh;
   display: flex;
   align-items: center;

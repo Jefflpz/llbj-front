@@ -1,167 +1,188 @@
 :root {
   --sidebar-bg: #ffffff;
-  --sidebar-primary: #4318ff;
-  --sidebar-text: #2b3674;
-  --sidebar-grey: #a3aed0;
-  --sidebar-hover: #f4f7fe;
+  --sidebar-primary: #4a8df8;
+  --sidebar-icon-grey: #515151;
 }
 
 .sidebar-container {
-  width: 290px;
+  width: 80px;
   height: calc(100vh - 40px);
   background: var(--sidebar-bg);
   margin: 20px;
-  border-radius: 30px;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
-  padding: 40px 0;
-  box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
+  align-items: center;
+  padding: 20px 0;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 20px;
+  z-index: 50;
 }
 
 .sidebar-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 0 30px;
-  margin-bottom: 50px;
+  width: 100%;
+  margin-bottom: 25px;
+  position: relative;
 }
 
-.brand-name {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--sidebar-text);
-  letter-spacing: -1px;
+.logo-box {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.logo-img {
+  width: 30px;
+  height: auto;
+}
+
+.toggle-btn {
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-color: #ff8943;
+  color: white;
+  border: 2px solid white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+.divider-line {
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(226, 232, 240, 0) 0%, #e2e8f0 50%, rgba(226, 232, 240, 0) 100%);
+  margin-top: 20px;
 }
 
 .sidebar-nav {
   flex: 1;
-  padding: 0 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
 }
 
 .nav-link {
-  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 15px 20px;
-  border: none;
-  background: none;
-  color: var(--sidebar-grey);
-  font-weight: 700;
-  cursor: pointer;
-  border-radius: 15px;
+  justify-content: center;
   transition: all 0.3s ease;
 }
 
-.nav-link.active {
-  color: var(--sidebar-primary);
+.nav-icon-wrapper {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  transition: all 0.3s ease;
+}
+
+.nav-link.active .nav-icon-wrapper {
+  background-color: var(--sidebar-primary);
+  border-radius: 4px 20px 20px 20px;
+  /* Formato diferenciado para o ativo igual à imagem */
+}
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  transition: all 0.3s ease;
 }
 
 .nav-link.active .nav-icon {
-  background: var(--sidebar-primary);
-  color: white;
-  padding: 5px;
-  border-radius: 8px;
+  filter: brightness(0) invert(1);
 }
 
-/* --- FOOTER E LOGOUT --- */
+.nav-link.active .lucide-icon {
+  color: white !important;
+}
+
 .sidebar-footer {
-  padding: 0 20px;
-  position: relative; /* Base para o popover flutuar */
-}
-
-.logout-popover {
-  position: absolute;
-  bottom: 85px; /* Ajustado para não colar no card */
-  left: 20px;
-  right: 20px;
-  background: white;
-  padding: 15px;
-  border-radius: 20px;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: 12px;
-  color: #ff5b5b;
-  font-weight: 700;
-  cursor: pointer;
-  z-index: 10;
-  border: 1px solid #fff5f5;
-  animation: slideUp 0.3s ease-out;
+  justify-content: center;
+  width: 100%;
 }
 
-.logout-popover:hover {
-  background: #fff5f5;
-}
-
-/* Card de Perfil */
 .profile-card {
-  background: var(--sidebar-hover);
-  padding: 12px 15px;
-  border-radius: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  padding: 3px;
+  border: 2px solid #e2e8f0;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
+  justify-content: center;
+  transition: all 0.2s;
+  background-color: white;
 }
 
 .profile-card:hover {
-  transform: translateY(-2px);
-}
-
-.profile-card.active {
-  background: #ffffff;
-  border-color: var(--sidebar-primary);
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
 }
 
 .profile-avatar {
-  width: 45px;
-  height: 45px;
+  width: 100%;
+  height: 100%;
   border-radius: 12px;
   object-fit: cover;
 }
 
-.profile-details {
-  flex: 1;
-  overflow: hidden;
-}
-
-.p-name {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--sidebar-text);
-  margin: 0;
+.logout-popover {
+  position: absolute;
+  top: -45px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ef4444;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.2s ease-out;
   white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.p-class {
-  font-size: 0.75rem;
-  color: var(--sidebar-grey);
-  margin: 0;
-}
-
-.p-arrow {
-  color: var(--sidebar-grey);
-  font-size: 1.2rem;
-  transition: transform 0.3s ease;
-}
-
-.p-arrow.up {
-  transform: rotate(180deg);
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translate(-50%, 10px);
   }
+
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, 0);
   }
 }

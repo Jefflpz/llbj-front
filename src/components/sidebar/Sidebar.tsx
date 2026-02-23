@@ -1,50 +1,113 @@
 import { useState } from 'react';
 import { useAuth } from '../../auth/AuthContext';
+import { useAdmin } from '../../hooks/useAdmin';
 import { useStudent } from '../../hooks/useStudent';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { ChevronRight, LayoutGrid, CalendarDays } from 'lucide-react';
 import './Sidebar.css';
 
 export function Sidebar() {
-  const { logout } = useAuth();
-  const { student, loading } = useStudent();
+  const { user, logout } = useAuth();
+  const { student } = useStudent();
+  const { admin } = useAdmin();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isAdmin = user?.role === 'ADMIN';
+  const profileImage = isAdmin ? admin?.urlImage : student?.urlImage;
+
   return (
-    <aside className="sidebar-container">
+    <aside className="sidebar-container collapsed">
       <div className="sidebar-header">
         <div className="logo-box">
-          <img src="/llbj-logo.svg" alt="Logo" className="logo-img" />
+          <img src="/owl.svg" alt="Logo" className="logo-img" />
+          <button className="toggle-btn">
+            <ChevronRight size={14} strokeWidth={3} />
+          </button>
         </div>
+        <div className="divider-line"></div>
       </div>
 
       <nav className="sidebar-nav">
         <div className="nav-group">
-          <button
-            className={`nav-link ${location.pathname === '/students' ? 'active' : ''}`}
-            onClick={() => navigate('/students')}
-          >
-            <span className="nav-icon">🏠</span>
-            <span className="nav-text">Início</span>
-          </button>
 
-          <button
-            className={`nav-link ${location.pathname === '/subjects' ? 'active' : ''}`}
-            onClick={() => navigate('/subjects')}
-          >
-            <span className="nav-icon">📄</span>
-            <span className="nav-text">Disciplinas</span>
-          </button>
+          {isAdmin ? (
+            <>
+              {/* ADMIN LINKS */}
+              <button
+                className={`nav-link ${location.pathname.includes('/admin/teachers') ? 'active' : ''}`}
+                onClick={() => navigate('/admin/teachers')}
+                title="Professores"
+              >
+                <div className="nav-icon-wrapper">
+                  <img src="/teachers.svg" alt="Teachers" className="nav-icon" />
+                </div>
+              </button>
+
+              <button
+                className={`nav-link ${location.pathname.includes('/admin/subjects') ? 'active' : ''}`}
+                onClick={() => navigate('/admin/subjects')}
+                title="Disciplinas"
+              >
+                <div className="nav-icon-wrapper">
+                  <img src="/subjects.svg" alt="Subjects" className="nav-icon" />
+                </div>
+              </button>
+
+              <button
+                className={`nav-link ${location.pathname.includes('/admin/students') ? 'active' : ''}`}
+                onClick={() => navigate('/admin/students')}
+                title="Alunos"
+              >
+                <div className="nav-icon-wrapper">
+                  <img src="/students.svg" alt="Students" className="nav-icon" />
+                </div>
+              </button>
+
+              <button
+                className={`nav-link ${location.pathname.includes('/admin/timetable') ? 'active' : ''}`}
+                onClick={() => navigate('/admin/timetable')}
+                title="Grade Horária"
+              >
+                <div className="nav-icon-wrapper">
+                  <CalendarDays size={24} color="#515151" className="nav-icon lucide-icon" />
+                </div>
+              </button>
+            </>
+          ) : (
+            <>
+              {/* STUDENT / TEACHER LINKS */}
+              <button
+                className={`nav-link ${location.pathname === '/subjects' ? 'active' : ''}`}
+                onClick={() => navigate('/subjects')}
+                title="Disciplinas"
+              >
+                <div className="nav-icon-wrapper">
+                  <img src="/subjects.svg" alt="Subjects" className="nav-icon" />
+                </div>
+              </button>
+
+              <button
+                className={`nav-link ${location.pathname === '/students' ? 'active' : ''}`}
+                onClick={() => navigate('/students')}
+                title="Início / Dashboard"
+              >
+                <div className="nav-icon-wrapper">
+                  <LayoutGrid size={24} color="#515151" className="nav-icon lucide-icon" />
+                </div>
+              </button>
+            </>
+          )}
+
         </div>
       </nav>
 
       <div className="sidebar-footer">
         {isMenuOpen && (
           <div className="logout-popover" onClick={logout}>
-            <span className="logout-icon">🚪</span>
-            <span>Sair da conta</span>
+            Sair
           </div>
         )}
 
@@ -52,20 +115,11 @@ export function Sidebar() {
           className={`profile-card ${isMenuOpen ? 'active' : ''}`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          <div className="profile-img-wrapper">
-            <img
-              src={student?.urlImage}
-              alt="Avatar"
-              className="profile-avatar"
-            />
-          </div>
-          <div className="profile-details">
-            <p className="p-name">
-              {loading ? '...' : student?.name || 'Usuário'}
-            </p>
-            <p className="p-class">{student?.className || 'Estudante'}</p>
-          </div>
-          <span className={`p-arrow ${isMenuOpen ? 'up' : ''}`}>⌄</span>
+          <img
+            src={profileImage || "https://ui-avatars.com/api/?name=User&background=random"}
+            alt="Avatar"
+            className="profile-avatar"
+          />
         </div>
       </div>
     </aside>

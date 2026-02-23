@@ -1,6 +1,6 @@
 .student-layout {
   display: flex;
-  background: #f4f7fe;
+  background: transparent;
   min-height: 100vh;
   font-family: 'DM Sans', sans-serif;
 }

@@ -39,7 +39,7 @@
 }
 
 .subject-card-item.active {
-  background: #f4f7fe;
+  background: transparent;
   border-left-color: #4318ff;
 }
 
