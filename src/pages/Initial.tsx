@@ -22,7 +22,7 @@ export default function Initial() {
             className="criancas"
           />
           <div className="initial-login">
-            <img src="/coruja.svg" alt="Coruja LLBJ" className="coruja-foto" />
+            <img src="/owl.svg" alt="Coruja LLBJ" className="coruja-foto" />
             <ButtonRedirect
               title="Comece aqui!"
               redirect="/login"
