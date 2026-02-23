@@ -2,7 +2,7 @@ import './LastPage.css';
 
 export default function LastPage() {
     return (
-        <div className='last-page'>
+        <div className='last-page'> 
             <div className='head-title'>
                 <p className='title'>Experiências Personalizadas</p>
                 <p>Ferramentas focadas nas necessidades reais de cada usuário.</p>
