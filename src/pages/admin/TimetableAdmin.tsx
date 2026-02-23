@@ -19,6 +19,7 @@ import type {
 import { TimetableGrid } from '../../components/timetable/TimetableGrid';
 import { SubjectPalette } from '../../components/timetable/SubjectPalette';
 import { SubjectCard } from '../../components/timetable/SubjectCard';
+import { Breadcrumbs } from '../../components/common/Breadcrumbs';
 import '../../styles/AdminTimetable.css';
 
 export default function TimetableAdmin() {
@@ -37,6 +38,14 @@ export default function TimetableAdmin() {
     // Drag State
     const [activeSubject, setActiveSubject] = useState<Subject | null>(null);
     const [activeOrigin, setActiveOrigin] = useState<'palette' | 'grid'>('palette');
+
+    // Modal State
+    const [pendingDrop, setPendingDrop] = useState<{
+        newItem: TimetableItem;
+        itemToRemoveId?: number;
+    } | null>(null);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showClearModal, setShowClearModal] = useState(false);
 
     useEffect(() => {
         loadClasses();
@@ -100,14 +109,6 @@ export default function TimetableAdmin() {
         if (slot.is_break) return;
 
         if (origin === 'palette') {
-            // Create new allocation
-            if (existingDestItem) {
-                // Swap logic: just override for now based on user confirmation or directly 
-                // to simplify the flow we apply override.
-                const confirm = window.confirm('Este horário já está preenchido. Deseja substituir?');
-                if (!confirm) return;
-            }
-
             const newItem: TimetableItem = {
                 id: Date.now(),
                 class_id: selectedClassId!,
@@ -119,42 +120,69 @@ export default function TimetableAdmin() {
                 active: 1,
             };
 
-            setTimetable((prev) => {
-                // Remove existing item at destination if any
-                const filtered = prev.filter(
-                    (i) => !(i.day_of_week === slot.day_of_week && i.start_time === slot.start_time)
-                );
-                return [...filtered, newItem];
-            });
+            if (existingDestItem) {
+                // Request replacement
+                setPendingDrop({ newItem });
+                setShowConfirmModal(true);
+                return;
+            }
+
+            // Direct Insert
+            setTimetable((prev) => [...prev, newItem]);
+
         } else if (origin === 'grid') {
-            // Move existing allocation
             const draggedItemId = active.id.toString().replace('grid-', '');
             const itemToMove = timetable.find((i) => i.id?.toString() === draggedItemId);
             if (!itemToMove) return;
 
+            const newItem = {
+                ...itemToMove,
+                day_of_week: slot.day_of_week,
+                start_time: slot.start_time,
+                end_time: slot.end_time,
+            };
+
             if (existingDestItem) {
-                // Simple override for now (or swap logic could be added)
-                const confirm = window.confirm('Deseja substituir a disciplina existente neste slot?');
-                if (!confirm) return;
+                // Request replacement
+                setPendingDrop({
+                    newItem,
+                    itemToRemoveId: itemToMove.id,
+                });
+                setShowConfirmModal(true);
+                return;
             }
 
-            setTimetable((prev) => {
-                const filtered = prev.filter(
-                    (i) =>
-                        i.id !== itemToMove.id && // Remove old position
-                        !(i.day_of_week === slot.day_of_week && i.start_time === slot.start_time) // Remove dest
-                );
-                return [
-                    ...filtered,
-                    {
-                        ...itemToMove,
-                        day_of_week: slot.day_of_week,
-                        start_time: slot.start_time,
-                        end_time: slot.end_time,
-                    },
-                ];
-            });
+            // Direct Move
+            setTimetable((prev) => [
+                ...prev.filter((i) => i.id !== itemToMove.id),
+                newItem,
+            ]);
         }
+    };
+
+    const confirmDrop = () => {
+        if (!pendingDrop) return;
+
+        const { newItem, itemToRemoveId } = pendingDrop;
+
+        setTimetable((prev) => {
+            const filtered = prev.filter((i) => {
+                const isOverridingDest =
+                    i.day_of_week === newItem.day_of_week &&
+                    i.start_time === newItem.start_time;
+                const isOldOrigin = itemToRemoveId && i.id === itemToRemoveId;
+
+                return !isOverridingDest && !isOldOrigin;
+            });
+            return [...filtered, newItem];
+        });
+
+        cancelDrop();
+    };
+
+    const cancelDrop = () => {
+        setPendingDrop(null);
+        setShowConfirmModal(false);
     };
 
     const handleSave = async () => {
@@ -167,12 +195,20 @@ export default function TimetableAdmin() {
         }
     };
 
-    const handleClear = async () => {
-        if (!window.confirm('Tem certeza que deseja limpar toda a grade?')) return;
+    const requestClear = () => {
+        setShowClearModal(true);
+    };
+
+    const executeClear = async () => {
         setTimetable([]);
         if (selectedClassId) {
             await timetableService.clearTimetable(selectedClassId, selectedPeriod);
         }
+        setShowClearModal(false);
+    };
+
+    const handleRemoveItem = (itemId: number) => {
+        setTimetable((prev) => prev.filter((i) => i.id !== itemId));
     };
 
     const handleExport = () => {
@@ -196,6 +232,11 @@ export default function TimetableAdmin() {
             <main className="timetable-content">
                 <header className="timetable-header">
                     <div className="timetable-title">
+                        <Breadcrumbs items={[
+                            { label: 'Início', path: '/' },
+                            { label: 'Administração' },
+                            { label: 'Grade Horária' }
+                        ]} />
                         <h1><strong>Definição de Grade Horária</strong></h1>
                         <p>Distribua as disciplinas e gerencie o cronograma semanal.</p>
                     </div>
@@ -244,7 +285,7 @@ export default function TimetableAdmin() {
                                 {countAllocatedHours()} / {calculateTargetHours()}h
                             </strong>
                         </span>
-                        <button className="btn-clear" onClick={handleClear}>
+                        <button className="btn-clear" onClick={requestClear}>
                             <Trash2 size={16} /> Limpar Tudo
                         </button>
                     </div>
@@ -266,6 +307,7 @@ export default function TimetableAdmin() {
                                 slots={slots}
                                 items={timetable}
                                 subjects={subjects}
+                                onRemoveItem={handleRemoveItem}
                             />
                             <SubjectPalette
                                 subjects={subjects}
@@ -273,7 +315,7 @@ export default function TimetableAdmin() {
                             />
                         </div>
 
-                        <DragOverlay dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}>
+                        <DragOverlay dropAnimation={null}>
                             {activeSubject ? (
                                 <div style={{ width: 140, height: 90, opacity: 0.8 }}>
                                     <SubjectCard
@@ -286,6 +328,34 @@ export default function TimetableAdmin() {
                         </DragOverlay>
                     </DndContext>
                 )}
+
+                {/* Modals Internos da Página */}
+                {showConfirmModal && (
+                    <div className="custom-modal-overlay">
+                        <div className="custom-modal-content">
+                            <h3>Substituir aula?</h3>
+                            <p>Este horário já está preenchido por outra disciplina. Deseja sobrescrever a aula existente?</p>
+                            <div className="custom-modal-actions">
+                                <button className="btn-modal-cancel" onClick={cancelDrop}>Cancelar</button>
+                                <button className="btn-modal-confirm" onClick={confirmDrop}>Sim, substituir</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {showClearModal && (
+                    <div className="custom-modal-overlay">
+                        <div className="custom-modal-content">
+                            <h3>Limpar a Grade Inteira?</h3>
+                            <p>Tem certeza que deseja remover TODAS as aulas desta visão? Esta ação é irreversível.</p>
+                            <div className="custom-modal-actions">
+                                <button className="btn-modal-cancel" onClick={() => setShowClearModal(false)}>Manter grade</button>
+                                <button className="btn-modal-danger" onClick={executeClear}>Limpar grade</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
             </main>
         </div>
     );

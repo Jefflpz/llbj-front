@@ -1,5 +1,6 @@
 import { Sidebar } from '../../components/sidebar/Sidebar';
 import '../../styles/AdminTimetable.css';
+import { Breadcrumbs } from '../../components/common/Breadcrumbs';
 
 export default function SubjectsAdmin() {
     return (
@@ -8,6 +9,11 @@ export default function SubjectsAdmin() {
             <main className="timetable-content">
                 <header className="timetable-header">
                     <div className="timetable-title">
+                        <Breadcrumbs items={[
+                            { label: 'Início', path: '/' },
+                            { label: 'Administração' },
+                            { label: 'Disciplinas' }
+                        ]} />
                         <h1><strong>Disciplinas</strong></h1>
                         <p>Gerenciamento de Matérias (Área em construção)</p>
                     </div>

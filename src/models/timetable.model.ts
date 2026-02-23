@@ -17,6 +17,7 @@ export interface Subject {
     teacher?: Teacher;
     weeklyTargetHours?: number;
     category?: string;
+    topic?: string;
 }
 
 export interface TimetableSlot {
