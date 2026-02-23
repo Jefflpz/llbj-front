@@ -19,9 +19,8 @@ export default function FirstPage() {
                     <div className="buttons">
                     <Button title="Acessar Sistema  🠒" style="green-gradient"></Button>
                     <Button title="Saiba Mais" style="white"></Button>
+                    </div>
                 </div>
-                </div>
-                
                 <img src="teacher img.png" alt="Teacher Image" />
             </div>
             <img src="border.svg" alt="border" className="border"/>

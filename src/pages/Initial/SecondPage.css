@@ -1,5 +1,6 @@
 .second-page {
-    margin-bottom: 50px;
+    margin-bottom: 10rem;
+    width: 100%;
 }
 
 .title {
@@ -7,7 +8,7 @@
     font-weight: 900;
     color: #0F172A;
     letter-spacing: -1.2px;
-    margin-bottom: 5px;
+    margin-bottom: 1rem;
 }
 
 .subtitle {
@@ -24,13 +25,13 @@
 .functions {
     position: relative;
     display: flex;
-    margin-top: 40px;
+    margin-top: 4rem;
 }
 
 .background {
     position: absolute;
     width: 100%;
-    margin-top: 100px;
+    margin-top: 5rem;
     margin-bottom: 0;
 }
 
@@ -38,18 +39,18 @@
     position: relative;
     background-color: #FFFFFF;
     border: 1px solid #F1F5F9;
-    width: 40vh;
-    max-height: 30vh;
-    padding: 40px;
+    width: 20rem;
+    max-height: 15rem;
+    padding: 2rem;
     border-radius: 50px;
     filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.1));
-    margin-left: 12vh;
+    margin-left: 4rem;
 }
 
 .icon-function-controle {
     background-color: rgba(60, 133, 236, 0.1);
-    padding: 20px;
-    width: 40px;
+    padding: 1rem;
+    width: 2rem;
     box-shadow: inset 0 0 10px rgba(60, 133, 236, 0.2);
     border-radius: 16px;
 }
@@ -62,7 +63,7 @@
 }
 
 .card-content {
-    width: 18em;
+    width: 20rem;
     color: #475569;
     font-size: 20px;
 }
@@ -71,26 +72,25 @@
     position: relative;
     background-color: #FFFFFF;
     border: 1px solid #F1F5F9;
-    width: 25vh;
-    padding: 55px;
-    max-height: 30vh;
+    width: 15rem;
+    padding: 2rem;
+    max-height: 50rem;
     border-radius: 50px;
     filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.1));
-    margin-left: 12vh;
-    margin-top: 8vh;
-    margin-bottom: 0;
+    margin-left: 6rem;
+    margin-top: 4rem;
 }
 
 .icon-function-lancamento {
     background-color: rgba(255, 137, 67, 0.1);
-    padding: 20px;
-    width: 40px;
+    padding: 1rem;
+    width: 2rem;
     box-shadow: inset 0 0 10px rgba(255, 137, 67, 0.2);
     border-radius: 16px;
 }
 
 .card-content-lancamento {
-    width: 14em;
+    width: 15rem;
     color: #475569;
     font-size: 20px;
 }
@@ -99,29 +99,33 @@
     position: relative;
     background-color: #FFFFFF;
     border: 1px solid #F1F5F9;
-    width: 55vh;
-    padding: 55px;
-    max-height: 27vh;
+    width: 25rem;
+    padding: 4rem;
+    max-height: 13rem;
     border-radius: 50px;
     filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.1));
-    margin-left: 12vh;
+    margin-left: 5rem;
 }
 
 .icon-function-boletim {
     background-color: rgba(124, 208, 84, 0.1);
-    padding: 20px;
-    width: 40px;
+    padding: 1rem;
+    width: 2rem;
     box-shadow: inset 0 0 10px rgba(124, 208, 84, 0.2);
     border-radius: 16px;
 }
 
 .card-content-boletim {
-    width: 25em;
+    width: 24rem;
     color: #475569;
     font-size: 20px;
 }
 
 #sincronia {
-    margin-left: 60px;
+    margin-left: 5rem;
+}
 
+#seguranca {
+    margin-left: 10rem;
+    margin-top: 2rem;
 }

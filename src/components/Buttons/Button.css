@@ -2,7 +2,7 @@
     background-image: linear-gradient(to right, #4692C6, #6366F1);
     padding: 10px;
     color: #ffffff;
-    width: 9vh;
+    width: 5rem;
     border-radius: 30px;
     text-align: center;
     font-weight: 500;
@@ -17,11 +17,11 @@
     background-image: linear-gradient(to right, #7CD054, #3C85EC);
     padding: 10px;
     color: #ffffff;
-    width: 25vh;
+    width: 20rem;
     border-radius: 40px;
     font-weight: 600;
     font-size: 25px;
-    height: 6vh;
+    height: 3rem;
 }
 
 .white {
@@ -32,11 +32,11 @@
     background-color: #ffffff;
     padding: 10px;
     color: #0F172A;
-    width: 25vh;
+    width: 10rem;
     border-radius: 40px;
     font-weight: 600;
     font-size: 25px;
-    height: 6vh;
+    height: 3rem;
 }
 
 #button {

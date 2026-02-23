@@ -28,12 +28,12 @@ export default function SecondPage() {
             <div className="functions">
                 <div className="controle-total">
                     <img src="feedback.svg" alt="Ícone feedback direto" className="icon-function-boletim"/>
-                    <p className="card-title">Feedback Direto</p>
+                    <p className="card-title" id="feedback">Feedback Direto</p>
                     <p className="card-content">Canal de comunicação seguro para aproximar escola e família em tempo real.</p>
                 </div>
-                <div className="controle-total">
+                <div className="controle-total" id="seguranca">
                     <img src="seguranca.svg" alt="Ícone seguranca maxima" className="icon-function-controle"/>
-                    <p className="card-title">Segurança Máxima</p>
+                    <p className="card-title" >Segurança Máxima</p>
                     <p className="card-content">Dados protegidos com o que há de mais moderno em criptografia e normas LGPD.</p>
                 </div>
                 <div className="controle-total" id="sincronia">

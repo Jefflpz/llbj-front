@@ -5,7 +5,7 @@ export default function LastPage() {
         <div className='last-page'> 
             <div className='head-title'>
                 <p className='title'>Experiências Personalizadas</p>
-                <p>Ferramentas focadas nas necessidades reais de cada usuário.</p>
+                <p className='subtitle'>Ferramentas focadas nas necessidades reais de cada usuário.</p>
             </div>
             <div className='cards'>
                 <div className='teacher-card'>

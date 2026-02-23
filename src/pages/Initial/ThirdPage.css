@@ -8,13 +8,13 @@
 
 .third-page {
     background-color: #F8FAFC;
-    padding: 10px;
+    padding: 2rem;
 }
 
 .steps {
     display: flex;
     justify-content: space-between;
-    margin: 15vh 30px 20vh 30px;
+    margin: 7rem 1rem 5rem 1rem;
     background-image: url("./dotted line.svg");
     background-repeat: no-repeat;
     background-position: center;
