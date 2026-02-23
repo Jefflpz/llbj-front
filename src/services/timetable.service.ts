@@ -22,6 +22,7 @@ const MOCK_SUBJECTS: Subject[] = [
         teacher: { registration: 'T01', name: 'Prof. Silva' },
         weeklyTargetHours: 6,
         category: 'CIÊNCIAS EXATAS',
+        topic: 'Equações',
     },
     {
         id: 102,
@@ -49,6 +50,7 @@ const MOCK_SUBJECTS: Subject[] = [
         teacher: { registration: 'T03', name: 'Prof. Ana' },
         weeklyTargetHours: 6,
         category: 'HUMANAS',
+        topic: 'Redação',
     },
     {
         id: 104,

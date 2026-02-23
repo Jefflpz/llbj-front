@@ -7,9 +7,10 @@ interface SlotCellProps {
     slot: TimetableSlot;
     item?: TimetableItem;
     subject?: Subject;
+    onRemoveItem?: (itemId: number) => void;
 }
 
-export const SlotCell: React.FC<SlotCellProps> = ({ slot, item, subject }) => {
+export const SlotCell: React.FC<SlotCellProps> = ({ slot, item, subject, onRemoveItem }) => {
     const { isOver, setNodeRef } = useDroppable({
         id: slot.slot_key,
         data: {
@@ -37,6 +38,7 @@ export const SlotCell: React.FC<SlotCellProps> = ({ slot, item, subject }) => {
                 <SubjectCard
                     id={item.id ? `grid-${item.id}` : `grid-temp-${slot.slot_key}`}
                     subject={subject}
+                    onRemove={onRemoveItem ? () => onRemoveItem(item.id!) : undefined}
                 />
             ) : (
                 <span style={{ fontSize: '1.5rem', opacity: 0.5 }}>+</span>

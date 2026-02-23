@@ -6,9 +6,10 @@ interface TimetableGridProps {
     slots: TimetableSlot[];
     items: TimetableItem[];
     subjects: Subject[];
+    onRemoveItem?: (itemId: number) => void;
 }
 
-export const TimetableGrid: React.FC<TimetableGridProps> = ({ slots, items, subjects }) => {
+export const TimetableGrid: React.FC<TimetableGridProps> = ({ slots, items, subjects, onRemoveItem }) => {
     const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
 
     // Identify unique timeslots combinations (row headers)
@@ -79,6 +80,7 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({ slots, items, subj
                                         slot={slotdef}
                                         item={mappedItem}
                                         subject={subject}
+                                        onRemoveItem={onRemoveItem}
                                     />
                                 );
                             })}

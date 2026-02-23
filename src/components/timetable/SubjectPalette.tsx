@@ -69,6 +69,10 @@ export const SubjectPalette: React.FC<SubjectPaletteProps> = ({ subjects, timeta
 
     return (
         <div className="palette-container">
+            <div className="drag-overlay-area">
+                <span>Arraste as disciplinas para as células</span>
+                <span>vazias para alocar horários.</span>
+            </div>
             <div className="palette-header">
                 <div style={{ backgroundColor: '#e0e7ff', padding: '6px', borderRadius: '8px', color: '#4338ca' }}>
                     <Info size={20} />
@@ -77,7 +81,6 @@ export const SubjectPalette: React.FC<SubjectPaletteProps> = ({ subjects, timeta
             </div>
 
             <div className="search-box">
-                <Search size={18} className="search-icon" />
                 <input
                     type="text"
                     placeholder="Buscar matéria..."
@@ -109,10 +112,7 @@ export const SubjectPalette: React.FC<SubjectPaletteProps> = ({ subjects, timeta
                 ))}
             </div>
 
-            <div className="drag-overlay-area">
-                <span>Arraste as disciplinas para as células</span>
-                <span>vazias para alocar horários.</span>
-            </div>
+
         </div>
     );
 };

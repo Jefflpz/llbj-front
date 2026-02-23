@@ -1,14 +1,16 @@
 import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
+import { X } from 'lucide-react';
 import type { Subject } from '../../models/timetable.model';
 
 interface SubjectCardProps {
     id: string; // The specific dragged item id
     subject: Subject;
     isPaletteItem?: boolean;
+    onRemove?: () => void;
 }
 
-export const SubjectCard: React.FC<SubjectCardProps> = ({ id, subject, isPaletteItem }) => {
+export const SubjectCard: React.FC<SubjectCardProps> = ({ id, subject, isPaletteItem, onRemove }) => {
     const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
         id: id,
         data: {
@@ -38,10 +40,25 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({ id, subject, isPalette
         >
             <h3 className="subject-name" style={{ color: textColors[hashId] }}>
                 {subject.name}
+                {!isPaletteItem && onRemove && (
+                    <button
+                        className="btn-remove-card"
+                        onPointerDown={(e) => {
+                            e.stopPropagation(); // Avoid drag trigger
+                        }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onRemove();
+                        }}
+                        title="Remover aula"
+                    >
+                        <X size={14} />
+                    </button>
+                )}
             </h3>
             <p className="subject-teacher">{subject.teacher?.name}</p>
             <div className="subject-room">
-                <span>📍</span> Sala Padrão
+                <span>📖</span> {subject.topic || 'Sem tema'}
             </div>
         </div>
     );
