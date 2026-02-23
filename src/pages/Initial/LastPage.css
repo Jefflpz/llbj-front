@@ -1,3 +1,107 @@
 .last-page {
-    background-image: linear-gradient(to right, #7CD054, #3C85EC);
+    background-image: linear-gradient(to right, rgba(255, 137, 67, 0.24), rgba(60, 133, 236, 0.24));
+    min-height: 70vh;
+}
+
+.card-icon {
+    background-color: #FF8943;
+    width: 30px;
+    height: 30px;
+    padding: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.experience-card-title {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.last-page {
+    background-image: linear-gradient(to right, rgba(255, 137, 67, 0.24), rgba(60, 133, 236, 0.24));
+}
+
+.card-icon {
+    background-color: #FF8943;
+    width: 25px;
+    height: 25px;
+    padding: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-icon-parent {
+    background-color: #0F172A;
+    width: 25px;
+    height: 25px;
+    padding: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checks {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.checks img {
+    width: 28px;
+    height: 28px;
+    margin-top: 4px;
+}
+
+.benefit-texts {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.benefit-title {
+    margin: 0;
+    font-size: 18px;
+    color: #0F172A;
+}
+
+.benefit-exp {
+    margin: 0;
+    font-size: 16px;
+    color: #475569;
+    max-width: 500px;
+}
+
+.benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.teacher-card {
+    background-color: rgba(255, 137, 67, 0.05);
+    border: 1px solid rgba(60, 133, 236, 0.10);
+    margin: 50px;
+    width: 600px;
+    padding: 30px;
+    border-radius: 40px;
+}
+
+.student-card {
+    background-color: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    margin: 50px;
+    width: 600px;
+    padding: 30px;
+    border-radius: 40px;
+}
+
+.cards {
+    display: flex;
+    justify-content: center;
 }
