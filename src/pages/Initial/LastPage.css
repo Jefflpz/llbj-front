@@ -1,6 +1,6 @@
 .last-page {
     background-image: linear-gradient(to right, rgba(255, 137, 67, 0.24), rgba(60, 133, 236, 0.24));
-    min-height: 80%;
+    height: 45rem;
 }
 
 .card-icon {

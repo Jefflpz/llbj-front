@@ -1,6 +1,5 @@
 .initial-page {
     width: 100%;
-    max-width: 96rem;
     background-color: #F8FAFC;
     background-image:
         radial-gradient(circle at 4% 5%, rgba(255, 137, 67, 0.45) 0%, rgba(255, 137, 67, 0) 15%),
@@ -70,6 +69,7 @@
 .content {
     display: flex;
     gap: 1rem;
+    justify-content: center;
 }
 
 .border {
