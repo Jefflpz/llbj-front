@@ -4,7 +4,7 @@ import Button from "../../components/Buttons/Button";
 
 export default function FirstPage() {
     return (
-        <div className="initial-page">
+        <div className="initial-page" id="inicio">
             <div className="initial-card">
                 <HeaderInitial></HeaderInitial>
             </div>

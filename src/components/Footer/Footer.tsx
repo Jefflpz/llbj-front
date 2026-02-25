@@ -2,7 +2,7 @@ import './Footer.css';
 
 export default function Footer() {
     return (
-        <div className='footer-background'>
+        <div className='footer-background' id='contato'>
             <div className='footer'>
                 <div className='footer-content'>
                     <div className='first-column'>

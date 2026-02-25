@@ -21,9 +21,13 @@
     justify-content: center;
     align-items: center;
     gap: 1.5rem;
-    color: #0F172A;
 }
 
 .icon {
     width: 1.8rem;
+}
+
+a {
+    text-decoration: none;
+    color: #0F172A;
 }

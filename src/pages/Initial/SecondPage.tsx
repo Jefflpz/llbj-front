@@ -2,7 +2,7 @@ import "./SecondPage.css";
 
 export default function SecondPage() {
     return (
-        <div className="second-page">
+        <div className="second-page" id="funcionalidades">
             <div className="head-title">
                 <p className="title">Funcionalidades de Impacto</p>
                 <p className="subtitle">Inovação constante para que sua gestão escolar nunca pare de evoluir.</p>
