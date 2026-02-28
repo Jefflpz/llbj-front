@@ -2,7 +2,7 @@ import { Sidebar } from '../../components/sidebar/Sidebar';
 import '../../styles/AdminTimetable.css';
 import { Breadcrumbs } from '../../components/common/Breadcrumbs';
 
-export default function StudentsAdmin() {
+export default function TeacherHome() {
     return (
         <div className="timetable-admin-page">
             <Sidebar />
@@ -10,17 +10,15 @@ export default function StudentsAdmin() {
                 <header className="timetable-header">
                     <div className="timetable-title">
                         <Breadcrumbs items={[
-                            { label: 'Início', path: '/' },
-                            { label: 'Administração' },
-                            { label: 'Turmas' }
+                            { label: 'Início', path: '/teacher/home' },
                         ]} />
-                        <h1><strong>Turmas</strong></h1>
-                        <p>Gerenciamento de Turmas (Área em construção)</p>
+                        <h1><strong>Início</strong></h1>
+                        <p>Bem-vindo à área do professor (Em construção)</p>
                     </div>
                 </header>
 
                 <section className="filters-row" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', color: '#9ca3af' }}>
-                    <h3>Nesta área será possível administrar os alunos matriculados e acessos.</h3>
+                    <h3>Página inicial do professor.</h3>
                 </section>
             </main>
         </div>

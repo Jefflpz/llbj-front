@@ -3,7 +3,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { useAdmin } from '../../hooks/useAdmin';
 import { useStudent } from '../../hooks/useStudent';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ChevronRight, LayoutGrid, CalendarDays } from 'lucide-react';
+import { ChevronRight, LayoutGrid, CalendarDays, Users, BookOpen } from 'lucide-react';
 import './Sidebar.css';
 
 export function Sidebar() {
@@ -16,7 +16,12 @@ export function Sidebar() {
   const location = useLocation();
 
   const isAdmin = user?.role === 'ADMIN';
-  const profileImage = isAdmin ? admin?.urlImage : student?.urlImage;
+  const isTeacher = user?.role === 'TEACHER';
+  const profileImage = isAdmin
+    ? admin?.urlImage
+    : isTeacher
+      ? `https://ui-avatars.com/api/?name=${user?.username || 'Teacher'}&background=random`
+      : student?.urlImage;
 
   return (
     <aside className="sidebar-container collapsed">
@@ -76,9 +81,42 @@ export function Sidebar() {
                 </div>
               </button>
             </>
+          ) : isTeacher ? (
+            <>
+              {/* TEACHER LINKS */}
+              <button
+                className={`nav-link ${location.pathname === '/teacher/home' ? 'active' : ''}`}
+                onClick={() => navigate('/teacher/home')}
+                title="Início"
+              >
+                <div className="nav-icon-wrapper">
+                  <LayoutGrid size={24} color="#515151" className="nav-icon lucide-icon" />
+                </div>
+              </button>
+
+              <button
+                className={`nav-link ${location.pathname === '/teacher/turmas' ? 'active' : ''}`}
+                onClick={() => navigate('/teacher/turmas')}
+                title="Turmas"
+              >
+                <div className="nav-icon-wrapper">
+                  <Users size={24} color="#515151" className="nav-icon lucide-icon" />
+                </div>
+              </button>
+
+              <button
+                className={`nav-link ${location.pathname === '/teacher/subjects' ? 'active' : ''}`}
+                onClick={() => navigate('/teacher/subjects')}
+                title="Disciplinas"
+              >
+                <div className="nav-icon-wrapper">
+                  <BookOpen size={24} color="#515151" className="nav-icon lucide-icon" />
+                </div>
+              </button>
+            </>
           ) : (
             <>
-              {/* STUDENT / TEACHER LINKS */}
+              {/* STUDENT LINKS */}
               <button
                 className={`nav-link ${location.pathname === '/subjects' ? 'active' : ''}`}
                 onClick={() => navigate('/subjects')}
