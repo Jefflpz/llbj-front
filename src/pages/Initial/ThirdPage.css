@@ -1,0 +1,24 @@
+.third-page {
+    background-color: #F8FAFC;
+    padding: 4rem 2rem;
+}
+
+.third-page .title {
+    font-size: 48px;
+    font-weight: 900;
+    color: #0F172A;
+    letter-spacing: -1.2px;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.steps {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin: 5rem 1rem 3rem 1rem;
+    background-image: url("./dotted line.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+}

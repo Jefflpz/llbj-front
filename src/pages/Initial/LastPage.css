@@ -1,0 +1,134 @@
+.last-page {
+    background-image: linear-gradient(to right, rgba(255, 137, 67, 0.18), rgba(60, 133, 236, 0.18));
+    padding: 4rem 2rem;
+}
+
+.last-page .head-title {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 2rem;
+}
+
+.last-page .title {
+    font-size: 48px;
+    font-weight: 900;
+    color: #0F172A;
+    letter-spacing: -1.2px;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.last-page .subtitle {
+    color: #475569;
+    font-size: 18px;
+    text-align: center;
+}
+
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.teacher-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(255, 137, 67, 0.2);
+    width: 100%;
+    max-width: 38rem;
+    padding: 2.5rem;
+    border-radius: 32px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.student-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background-color: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    width: 100%;
+    max-width: 38rem;
+    padding: 2.5rem;
+    border-radius: 32px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.experience-card-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.experience-card-title img {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.card-icon {
+    background-color: #FF8943;
+    padding: 1.3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-icon-parent {
+    background-color: #0F172A;
+    padding: 1.3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.checks {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.checks img {
+    width: 2rem;
+    height: 2rem;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.benefit-texts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.benefit-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #0F172A;
+}
+
+.benefit-exp {
+    margin: 0;
+    font-size: 16px;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.last-page .card-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0F172A;
+    margin: 0;
+}

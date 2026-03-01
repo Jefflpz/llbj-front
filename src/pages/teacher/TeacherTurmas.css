@@ -1,0 +1,250 @@
+.turmas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.search-filters-row {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    width: 100%;
+}
+
+.search-bar-wrapper {
+    position: relative;
+    flex: 1;
+}
+
+.search-bar-wrapper .search-icon {
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3.5rem;
+    border-radius: 9999px;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    font-size: 0.95rem;
+    color: #1e293b;
+    outline: none;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.search-input::placeholder {
+    color: #94a3b8;
+}
+
+.search-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.dropdown-filter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dropdown-filter:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.turmas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.turma-card {
+    background: #ffffff;
+    border-radius: 2.5rem;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f1f5f9;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.turma-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.turma-card--inactive {
+    opacity: 0.7;
+    background-color: #f8fafc;
+}
+
+.card-top-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.subject-icon-badge {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-badge--blue {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.icon-badge--orange {
+    background: #fff7ed;
+    color: #f97316;
+}
+
+.icon-badge--purple {
+    background: #faf5ff;
+    color: #a855f7;
+}
+
+.icon-badge--red {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.icon-badge--gray {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.info-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.info-badge--students {
+    background: #fff7ed;
+    color: #f97316;
+}
+
+.info-badge--shift {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.info-badge--status {
+    text-transform: uppercase;
+}
+
+.status--active {
+    background: #f0fdf4;
+    color: #22c55e;
+}
+
+.status--inactive {
+    background: #f1f5f9;
+    color: #94a3b8;
+}
+
+.card-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.card-title-group h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.card-title-group .subject-name {
+    font-size: 1.1rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.card-title-group .subject-level {
+    font-size: 0.95rem;
+    color: #94a3b8;
+}
+
+.card-actions-quick {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-quick {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 9999px;
+    border: none;
+    background-color: #e2e8f0;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-quick:hover {
+    background-color: #cbd5e1;
+}
+
+.btn-select-turma {
+    width: 100%;
+    padding: 1.125rem;
+    border-radius: 9999px;
+    border: none;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    color: #ffffff;
+    font-weight: 550;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-select-turma:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.btn-select-turma--inactive {
+    background: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+.btn-select-turma--inactive:hover {
+    transform: none;
+    box-shadow: none;
+}
