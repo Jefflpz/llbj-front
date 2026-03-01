@@ -1,132 +1,116 @@
 .second-page {
-    margin-bottom: 10rem;
+    padding-bottom: 6rem;
     width: 100%;
-}
-
-.title {
-    font-size: 60px;
-    font-weight: 900;
-    color: #0F172A;
-    letter-spacing: -1.2px;
-    margin-bottom: 1rem;
-}
-
-.subtitle {
-    color: #475569;
-    font-size: 20px;
+    background-color: #ffffff;
 }
 
 .head-title {
     display: flex;
     align-items: center;
     flex-direction: column;
+    padding: 4rem 2rem 2rem;
+}
+
+.second-page .title {
+    font-size: 48px;
+    font-weight: 900;
+    color: #0F172A;
+    letter-spacing: -1.2px;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.second-page .subtitle {
+    color: #475569;
+    font-size: 18px;
+    text-align: center;
 }
 
 .functions {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    margin-top: 4rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    justify-items: center;
+    margin-top: 2rem;
+    padding: 0 20rem;
 }
 
-.background {
-    position: absolute;
-    width: 100%;
-    margin-top: 5rem;
-    margin-bottom: 0;
-}
-
-.controle-total {
-    position: relative;
-    background-color: #FFFFFF;
-    border: 1px solid #F1F5F9;
-    width: 20rem;
-    max-height: 15rem;
-    padding: 2rem;
-    border-radius: 50px;
-    filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.1));
-    margin-left: 4rem;
-}
-
-.icon-function-controle {
-    background-color: rgba(60, 133, 236, 0.1);
-    padding: 1rem;
-    width: 2rem;
-    box-shadow: inset 0 0 10px rgba(60, 133, 236, 0.2);
-    border-radius: 16px;
-}
-
-.card-title {
-    font-size: 30px;
-    font-weight: 800;
-    letter-spacing: -1.2px;
-    color: #0F172A;
-}
-
-.card-content {
-    width: 20rem;
-    color: #475569;
-    font-size: 20px;
-}
-
-.lancamento-agil {
-    position: relative;
-    background-color: #FFFFFF;
-    border: 1px solid #F1F5F9;
-    width: 15rem;
-    padding: 2rem;
-    max-height: 50rem;
-    border-radius: 50px;
-    filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.1));
-    margin-left: 6rem;
-    margin-top: 4rem;
-}
-
-.icon-function-lancamento {
-    background-color: rgba(255, 137, 67, 0.1);
-    padding: 1rem;
-    width: 2rem;
-    box-shadow: inset 0 0 10px rgba(255, 137, 67, 0.2);
-    border-radius: 16px;
-}
-
-.card-content-lancamento {
-    width: 15rem;
-    color: #475569;
-    font-size: 20px;
-}
-
+/* Todos os cards de funcionalidade seguem o mesmo padrão */
+.controle-total,
+.lancamento-agil,
 .boletim-inteligente {
     position: relative;
     background-color: #FFFFFF;
     border: 1px solid #F1F5F9;
-    width: 25rem;
-    padding: 4rem;
-    max-height: 13rem;
-    border-radius: 50px;
-    filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.1));
-    margin-left: 5rem;
+    width: 22rem;
+    padding: 2rem;
+    border-radius: 28px;
+    filter: drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.07));
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    cursor: default;
+}
+
+.controle-total:hover,
+.lancamento-agil:hover,
+.boletim-inteligente:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(60, 133, 236, 0.12);
+    border-color: rgba(60, 133, 236, 0.3);
+}
+
+/* Ícones */
+.icon-function-controle {
+    background-color: rgba(60, 133, 236, 0.1);
+    padding: 0.75rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    box-shadow: inset 0 0 10px rgba(60, 133, 236, 0.2);
+    border-radius: 14px;
+    object-fit: contain;
+}
+
+.icon-function-lancamento {
+    background-color: rgba(255, 137, 67, 0.1);
+    padding: 0.75rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    box-shadow: inset 0 0 10px rgba(255, 137, 67, 0.2);
+    border-radius: 14px;
+    object-fit: contain;
 }
 
 .icon-function-boletim {
     background-color: rgba(124, 208, 84, 0.1);
-    padding: 1rem;
-    width: 2rem;
+    padding: 0.75rem;
+    width: 2.5rem;
+    height: 2.5rem;
     box-shadow: inset 0 0 10px rgba(124, 208, 84, 0.2);
-    border-radius: 16px;
+    border-radius: 14px;
+    object-fit: contain;
 }
 
+.card-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #0F172A;
+    margin: 0;
+}
+
+.card-content,
+.card-content-lancamento,
 .card-content-boletim {
-    width: 24rem;
     color: #475569;
-    font-size: 20px;
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.5;
 }
 
+/* Remove os sobrescritos de margin antigos */
+#seguranca,
 #sincronia {
-    margin-left: 5rem;
-}
-
-#seguranca {
-    margin-left: 10rem;
-    margin-top: 2rem;
+    margin: 0;
 }

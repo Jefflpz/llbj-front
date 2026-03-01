@@ -1,20 +1,23 @@
-.title {
-    font-size: 50px;
+.third-page {
+    background-color: #F8FAFC;
+    padding: 4rem 2rem;
+}
+
+.third-page .title {
+    font-size: 48px;
     font-weight: 900;
     color: #0F172A;
     letter-spacing: -1.2px;
     text-align: center;
-}
-
-.third-page {
-    background-color: #F8FAFC;
-    padding: 2rem;
+    margin-bottom: 0;
 }
 
 .steps {
     display: flex;
-    justify-content: space-between;
-    margin: 7rem 1rem 5rem 1rem;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin: 5rem 1rem 3rem 1rem;
     background-image: url("./dotted line.svg");
     background-repeat: no-repeat;
     background-position: center;

@@ -1,8 +1,18 @@
 import HeaderInitial from "../../components/Header/Header";
 import "./FirstPage.css";
 import Button from "../../components/Buttons/Button";
+import { useNavigate } from "react-router-dom";
 
 export default function FirstPage() {
+    const navigate = useNavigate();
+
+    const scrollToFeatures = () => {
+        const element = document.getElementById("funcionalidades");
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
     return (
         <div className="initial-page" id="inicio">
             <div className="initial-card">
@@ -11,19 +21,19 @@ export default function FirstPage() {
             <div className="content">
                 <div className="texts">
                     <h3 className="head">EDUCAÇÃO DO FUTURO</h3>
-                    <p className="head-text">Transforme 
+                    <p className="head-text">Transforme
                         <span>sua escola com</span>
                         <span className="highlight">inteligência.</span>
                     </p>
                     <p className="final-text">A escola é um espaço onde o conhecimento, os valores e o respeito caminham juntos na construção do futuro.</p>
                     <div className="buttons">
-                    <Button title="Acessar Sistema  🠒" style="green-gradient"></Button>
-                    <Button title="Saiba Mais" style="white"></Button>
+                        <Button title="Acessar Sistema" style="green-gradient" onClick={() => navigate("/login")}></Button>
+                        <Button title="Saiba Mais" style="white" onClick={scrollToFeatures}></Button>
                     </div>
                 </div>
                 <img src="teacher img.png" alt="Teacher Image" />
             </div>
-            <img src="border.svg" alt="border" className="border"/>
+            <img src="border.svg" alt="border" className="border" />
         </div>
     );
 }
