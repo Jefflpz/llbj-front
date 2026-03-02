@@ -1,13 +1,15 @@
 import { Sidebar } from '../../components/sidebar/Sidebar';
-import '../../styles/AdminTimetable.css';
+import { useNavigate } from 'react-router-dom';
 import './TeacherHome.css';
 import { Breadcrumbs } from '../../components/common/Breadcrumbs';
 import { useAuth } from '../../auth/AuthContext';
 import {
-    FileText,
+    User,
     Users,
     Calendar,
+    CalendarCheck,
     BookOpen,
+    BookMarked,
     Download,
     ArrowUpRight,
     Zap,
@@ -59,6 +61,7 @@ const agendaItems = [
 
 export default function TeacherHome() {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const displayName = user?.name || user?.username || 'Professor';
     const dateLabel = formatDate(today);
 
@@ -90,7 +93,7 @@ export default function TeacherHome() {
                         <div className="stats-row">
                             <div className="stat-card">
                                 <div className="stat-icon stat-icon--blue">
-                                    <FileText size={22} color="#3b82f6" />
+                                    <BookMarked size={24} color="#3b82f6" />
                                 </div>
                                 <div className="stat-info">
                                     <span className="stat-label">MINHAS TURMAS</span>
@@ -99,7 +102,7 @@ export default function TeacherHome() {
                             </div>
                             <div className="stat-card">
                                 <div className="stat-icon stat-icon--green">
-                                    <Users size={22} color="#22c55e" />
+                                    <User size={24} color="#22c55e" />
                                 </div>
                                 <div className="stat-info">
                                     <span className="stat-label">TOTAL DE ALUNOS</span>
@@ -108,7 +111,7 @@ export default function TeacherHome() {
                             </div>
                             <div className="stat-card">
                                 <div className="stat-icon stat-icon--yellow">
-                                    <Calendar size={22} color="#f59e0b" />
+                                    <CalendarCheck size={24} color="#f59e0b" />
                                 </div>
                                 <div className="stat-info">
                                     <span className="stat-label">AULAS HOJE</span>
@@ -139,9 +142,7 @@ export default function TeacherHome() {
                                         <button className="tag-btn tag-btn--outline">PESQUISAR</button>
                                         <button className="tag-btn tag-btn--outline">FILTRAR</button>
                                     </div>
-                                    <div className="action-tags" style={{ marginTop: '0.5rem' }}>
-                                        <button className="tag-btn tag-btn--blue">+ OBSERVAÇÃO</button>
-                                    </div>
+                                    <button className="tag-btn tag-btn--blue" onClick={() => navigate('/teacher/turmas')}>+ OBSERVAÇÃO</button>
                                 </div>
 
                                 {/* Lançar Notas Card */}
