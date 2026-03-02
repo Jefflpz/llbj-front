@@ -39,31 +39,11 @@ export default function TeacherTurmas() {
                             { label: 'Minhas Turmas' },
                         ]} />
                         <h1><strong>Minhas Turmas</strong></h1>
-                        <p>{dateLabel}</p>
+                        <p>Gerencia suas turmas e alunos.</p>
                     </div>
                 </header>
 
                 <div className="turmas-container">
-                    <div className="search-filters-row">
-                        <div className="search-bar-wrapper">
-                            <Search className="search-icon" size={20} />
-                            <input
-                                type="text"
-                                placeholder="Pesquisar professor por nome, matrícula ou disciplina..."
-                                className="search-input"
-                            />
-                        </div>
-                        <button className="dropdown-filter">
-                            Disciplina <ChevronDown size={16} />
-                        </button>
-                        <button className="dropdown-filter">
-                            Status <ChevronDown size={16} />
-                        </button>
-                        <button className="dropdown-filter">
-                            Turno <ChevronDown size={16} />
-                        </button>
-                    </div>
-
                     <div className="turmas-grid">
                         {turmasData.map((turma) => (
                             <div key={turma.id} className={`turma-card ${!turma.active ? 'turma-card--inactive' : ''}`}>
@@ -95,11 +75,13 @@ export default function TeacherTurmas() {
                                         <div className="card-actions-quick">
                                             <button
                                                 className="btn-quick"
-                                                onClick={() => navigate(`/teacher/turmas/${turma.id}/notas`)}
+                                                onClick={() => navigate(`/teacher/turmas/${turma.id}?tab=notas`)}
                                             >
                                                 Lancar notas
                                             </button>
-                                            <button className="btn-quick">Lancar Observação</button>
+                                            <button className="btn-quick" onClick={() => navigate(`/teacher/turmas/${turma.id}?tab=alunos&action=observacao`)}>
+                                                Lançar Observação
+                                            </button>
                                         </div>
                                         <button
                                             className="btn-select-turma"

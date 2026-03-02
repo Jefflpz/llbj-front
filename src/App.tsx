@@ -11,7 +11,6 @@ import StudentsAdmin from './pages/admin/StudentsAdmin';
 import TeacherHome from './pages/teacher/TeacherHome';
 import TeacherTurmas from './pages/teacher/TeacherTurmas';
 import TeacherSubjects from './pages/teacher/TeacherSubjects';
-import TeacherGrades from './pages/teacher/TeacherGrades';
 import TeacherClassDetails from './pages/teacher/TeacherClassDetails';
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
@@ -92,14 +91,6 @@ function App() {
         element={
           <TeacherRoute>
             <TeacherSubjects />
-          </TeacherRoute>
-        }
-      />
-      <Route
-        path="/teacher/turmas/:id/notas"
-        element={
-          <TeacherRoute>
-            <TeacherGrades />
           </TeacherRoute>
         }
       />
