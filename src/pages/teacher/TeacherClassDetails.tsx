@@ -1,9 +1,15 @@
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from '../../components/sidebar/Sidebar';
 import { Breadcrumbs } from '../../components/common/Breadcrumbs';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Search, ChevronLeft, ChevronRight, MoreVertical, User, FileText, Mail } from 'lucide-react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { ChevronLeft, Plus } from 'lucide-react';
 import { turmasData } from '../../data/mockTurmas';
 import { studentsData } from '../../data/mockStudents';
+import { ObservationModal } from '../../components/modals/ObservationModal';
+import { addObservationTransaction } from '../../data/mockObservations';
+import { StudentsTab } from '../../components/teacher/tabs/StudentsTab';
+import { ObservationsTab } from '../../components/teacher/tabs/ObservationsTab';
+import { GradesTab } from '../../components/teacher/tabs/GradesTab';
 import './TeacherClassDetails.css';
 
 const today = new Date();
@@ -17,13 +23,64 @@ function formatDate(date: Date) {
     return `${days[date.getDay()]}, ${date.getDate()} de ${months[date.getMonth()]} de ${date.getFullYear()}`;
 }
 
+
 export default function TeacherClassDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const dateLabel = formatDate(today);
 
     const currentTurma = turmasData.find(t => t.id === Number(id));
     const studentsInClass = studentsData.filter(s => s.classId === Number(id));
+
+    // Determine active tab from URL query params (default to 'alunos')
+    const activeTab = searchParams.get('tab') || 'alunos';
+
+    const [isObservationModalOpen, setIsObservationModalOpen] = useState(false);
+    const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
+
+    // We add a dummy state to force re-render when a new observation is added (since we mutate the mock directly)
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+    useEffect(() => {
+        if (searchParams.get('action') === 'observacao') {
+            setSearchParams({ tab: 'alunos' });
+            setIsObservationModalOpen(true);
+            setSelectedStudentIds(studentsInClass.map(s => s.id));
+        }
+    }, [searchParams, studentsInClass.length, setSearchParams]);
+
+    const handleTabChange = (tabName: string) => {
+        setSearchParams({ tab: tabName });
+    };
+
+    const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.checked) {
+            setSelectedStudentIds(studentsInClass.map(s => s.id));
+        } else {
+            setSelectedStudentIds([]);
+        }
+    };
+
+    const handleSelectStudent = (studentId: string, checked: boolean) => {
+        if (checked) {
+            setSelectedStudentIds(prev => [...prev, studentId]);
+        } else {
+            setSelectedStudentIds(prev => prev.filter(id => id !== studentId));
+        }
+    };
+
+    const handleSendObservation = (type: '1' | '2' | '3', message: string, selectedIds: string[]) => {
+        if (!currentTurma) return;
+        addObservationTransaction(currentTurma.id, 'PROF-Logado', message, type, selectedIds);
+        setRefreshTrigger(prev => prev + 1); // Force tab re-render to fetch new data
+        handleTabChange('observacoes'); // Switch to history tab to see it
+    };
+
+    // Navigation handler that can be passed to children component
+    const onNavigateToGrades = () => {
+        handleTabChange('notas');
+    };
 
     if (!currentTurma) {
         return <div>Turma não encontrada</div>;
@@ -42,111 +99,82 @@ export default function TeacherClassDetails() {
                             { label: currentTurma.name },
                         ]} />
                         <div className="header-with-back">
-                            <button onClick={() => navigate('/teacher/turmas')} className="btn-back">
-                                <ChevronLeft size={24} />
-                            </button>
-                            <h1><strong>Alunos - {currentTurma.name}</strong></h1>
+                            <div className="header-title-group">
+                                <button onClick={() => navigate('/teacher/turmas')} className="btn-back">
+                                    <ChevronLeft size={24} />
+                                </button>
+                                <h1><strong>Acadêmico - {currentTurma.name}</strong></h1>
+                            </div>
+                            {activeTab === 'alunos' && (
+                                <button
+                                    className="btn-nova-observacao"
+                                    onClick={() => setIsObservationModalOpen(true)}
+                                >
+                                    <Plus size={18} />
+                                    Lançar Observação
+                                </button>
+                            )}
                         </div>
                         <p>{dateLabel}</p>
                     </div>
                 </header>
 
+                {/* Tabs Navigation */}
+                <div className="tabs-navigation">
+                    <button
+                        className={`tab-item ${activeTab === 'alunos' ? 'tab-item--active' : ''}`}
+                        onClick={() => handleTabChange('alunos')}
+                    >
+                        Alunos
+                    </button>
+                    <button
+                        className={`tab-item ${activeTab === 'observacoes' ? 'tab-item--active' : ''}`}
+                        onClick={() => handleTabChange('observacoes')}
+                    >
+                        Observações Enviadas
+                    </button>
+                    <button
+                        className={`tab-item ${activeTab === 'notas' ? 'tab-item--active' : ''}`}
+                        onClick={() => handleTabChange('notas')}
+                    >
+                        Notas
+                    </button>
+                </div>
+
                 <div className="class-details-container">
-                    {/* Filter section exactly as in the reference image */}
-                    <div className="filters-container">
-                        <div className="search-bar-wrapper">
-                            <Search className="search-icon" size={20} />
-                            <input
-                                type="text"
-                                placeholder="Pesquisar estudante por nome, matrícula ou disciplina..."
-                                className="search-input"
-                            />
-                        </div>
-                        <div className="dropdown-filters">
-                            <select className="filter-select">
-                                <option>Departamento</option>
-                            </select>
-                            <select className="filter-select">
-                                <option>Status</option>
-                            </select>
-                            <select className="filter-select">
-                                <option>Turno</option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <div className="students-list-wrapper">
-                        <table className="students-table">
-                            <thead>
-                                <tr>
-                                    <th>ESTUDANTE</th>
-                                    <th>MATRÍCULA</th>
-                                    <th>TURMA</th>
-                                    <th>STATUS</th>
-                                    <th style={{ textAlign: 'right' }}>AÇÕES</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {studentsInClass.map((student) => (
-                                    <tr key={student.id}>
-                                        <td>
-                                            <div className="student-info-cell">
-                                                <img src={student.urlImage} alt={student.name} className="student-avatar" />
-                                                <div className="student-details">
-                                                    <h3>{student.name}</h3>
-                                                    <span>{student.email}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span className="registration-cell">{(student as any).registration || 'MAT-202301'}</span>
-                                        </td>
-                                        <td>
-                                            <span className="class-cell">{currentTurma.name}</span>
-                                        </td>
-                                        <td>
-                                            <span className={`status-badge ${((student as any).status || 'Ativo').toLowerCase()}`}>
-                                                {(student as any).status || 'Ativo'}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div className="table-actions">
-                                                <button className="btn-table-action" title="Ver Perfil">
-                                                    <User size={18} />
-                                                </button>
-                                                <button
-                                                    className="btn-table-action"
-                                                    title="Ver Notas"
-                                                    onClick={() => navigate(`/teacher/turmas/${id}/notas`)}
-                                                >
-                                                    <FileText size={18} />
-                                                </button>
-                                                <button className="btn-table-action" title="Enviar Mensagem">
-                                                    <Mail size={18} />
-                                                </button>
-                                                <button className="btn-table-action" title="Mais Opções">
-                                                    <MoreVertical size={18} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    {activeTab === 'alunos' && (
+                        <StudentsTab
+                            studentsInClass={studentsInClass}
+                            currentTurmaName={currentTurma.name}
+                            selectedStudentIds={selectedStudentIds}
+                            handleSelectAll={handleSelectAll}
+                            handleSelectStudent={handleSelectStudent}
+                            onNavigateToGrades={onNavigateToGrades}
+                        />
+                    )}
 
-                        <div className="pagination-footer">
-                            <span className="count-info">Exibindo {studentsInClass.length} de {studentsInClass.length} estudantes</span>
-                            <div className="pagination-controls">
-                                <button className="page-btn arrow"><ChevronLeft size={18} /></button>
-                                <button className="page-btn active">1</button>
-                                <button className="page-btn">2</button>
-                                <button className="page-btn">3</button>
-                                <button className="page-btn arrow"><ChevronRight size={18} /></button>
-                            </div>
-                        </div>
-                    </div>
+                    {activeTab === 'observacoes' && (
+                        <ObservationsTab classId={currentTurma.id} refreshTrigger={refreshTrigger} />
+                    )}
+
+                    {activeTab === 'notas' && (
+                        <GradesTab />
+                    )}
+
                 </div>
             </main>
+
+            {/* Modal de Observação */}
+            <ObservationModal
+                isOpen={isObservationModalOpen}
+                onClose={() => setIsObservationModalOpen(false)}
+                currentTurma={currentTurma}
+                studentsInClass={studentsInClass}
+                selectedStudentIds={selectedStudentIds}
+                onRecipientChange={setSelectedStudentIds}
+                onSend={handleSendObservation}
+            />
         </div>
     );
 }
