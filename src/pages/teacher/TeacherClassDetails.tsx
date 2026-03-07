@@ -98,25 +98,26 @@ export default function TeacherClassDetails() {
                             { label: 'Minhas Turmas', path: '/teacher/turmas' },
                             { label: currentTurma.name },
                         ]} />
-                        <div className="header-with-back">
-                            <div className="header-title-group">
-                                <button onClick={() => navigate('/teacher/turmas')} className="btn-back">
-                                    <ChevronLeft size={24} />
-                                </button>
-                                <h1><strong>Acadêmico - {currentTurma.name}</strong></h1>
-                            </div>
-                            {activeTab === 'alunos' && (
-                                <button
-                                    className="btn-nova-observacao"
-                                    onClick={() => setIsObservationModalOpen(true)}
-                                >
-                                    <Plus size={18} />
-                                    Lançar Observação
-                                </button>
-                            )}
+                        <div className="header-title-group">
+                            <button onClick={() => navigate('/teacher/turmas')} className="btn-back">
+                                <ChevronLeft size={24} />
+                            </button>
+                            <h1><strong>Acadêmico - {currentTurma.name}</strong></h1>
                         </div>
                         <p>{dateLabel}</p>
                     </div>
+
+                    {activeTab === 'alunos' && (
+                        <div className="header-buttons">
+                            <button
+                                className="btn-nova-observacao"
+                                onClick={() => setIsObservationModalOpen(true)}
+                            >
+                                <Plus size={18} />
+                                Lançar Observação
+                            </button>
+                        </div>
+                    )}
                 </header>
 
                 {/* Tabs Navigation */}

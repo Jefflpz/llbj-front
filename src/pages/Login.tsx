@@ -80,11 +80,11 @@ export default function Login() {
               </div>
             </div>
 
-            <button type="submit" className="btn-primary">Entrar</button>
+            <button type="submit" className="btn-primary-login">Entrar</button>
 
             <div className="divider">Ainda não acessou?</div>
 
-            <button type="button" className="btn-secondary">
+            <button type="button" className="btn-secondary" onClick={() => navigate('/primeiro-acesso')}>
               Primeiro Acesso
             </button>
           </form>
@@ -99,7 +99,7 @@ export default function Login() {
           <div className="glass-card">
             <GraduationCap size={40} className="glass-icon" />
             <h2>Potencialize o Futuro</h2>
-            <p>Acesse as melhores ferramentas de gestão escolar. Tudo em um só lugar.</p>
+            <p>Acesse as melhores ferramentas de gestão escolar para professores, alunos e administradores. Tudo em um só lugar.</p>
           </div>
         </div>
       </div>

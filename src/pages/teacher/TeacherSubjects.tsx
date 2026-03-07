@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Sidebar } from '../../components/sidebar/Sidebar';
 import { Breadcrumbs } from '../../components/common/Breadcrumbs';
-import { Calendar, Clock, Edit2, Plus, Target, Trash2, ArrowLeft, BookOpen, Users, ChevronLeft, ChevronRight, FileText, Play } from 'lucide-react';
+import { Calendar, Clock, Edit2, Plus, Target, Trash2, BookOpen, Users, ChevronLeft, ChevronRight, FileText, Play } from 'lucide-react';
 import { quizzesData, deleteQuiz, addQuiz, updateQuiz, type Quiz } from '../../data/mockQuizzes';
 import { turmasData } from '../../data/mockTurmas';
 import { weeklyAgendasData, classMaterialsData } from '../../data/mockAgenda';
@@ -197,46 +197,44 @@ export default function TeacherSubjects() {
             <Sidebar />
             <main className="timetable-content">
                 <header className="timetable-header">
-                    <div className="timetable-title">
-                        {!selectedSubjectId ? (
-                            <>
-                                <Breadcrumbs items={[
-                                    { label: 'Início', path: '/teacher/home' },
-                                    { label: 'Disciplinas' },
-                                ]} />
-                                <div className="header-with-action">
-                                    <div>
-                                        <h1><strong>Disciplinas</strong></h1>
-                                        <p>Acesse o material de apoio e cadastre os quizzes de cada disciplina.</p>
-                                    </div>
-                                </div>
-                            </>
-                        ) : (
-                            <>
+                    {!selectedSubjectId ? (
+                        <div className="timetable-title">
+                            <Breadcrumbs items={[
+                                { label: 'Início', path: '/teacher/home' },
+                                { label: 'Disciplinas' },
+                            ]} />
+                            <div>
+                                <h1><strong>Disciplinas</strong></h1>
+                                <p>Acesse o material de apoio e cadastre os quizzes de cada disciplina.</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="timetable-title">
                                 <Breadcrumbs items={[
                                     { label: 'Início', path: '/teacher/home' },
                                     { label: 'Disciplinas' },
                                     { label: currentSubject?.name || 'Detalhes' }
                                 ]} />
-                                <div className="header-with-back">
-                                    <div className="header-title-group">
-                                        <button onClick={() => setSelectedSubjectId(null)} className="btn-back">
-                                            <ChevronLeft size={24} />
-                                        </button>
-                                        <h1><strong>{currentSubject?.subject} - {currentSubject?.name}</strong></h1>
-                                    </div>
-                                    <button
-                                        className="btn-novo-quiz"
-                                        onClick={handleCreateNew}
-                                    >
-                                        <Plus size={18} />
-                                        Criar Quiz
+                                <div className="header-title-group">
+                                    <button onClick={() => setSelectedSubjectId(null)} className="btn-back">
+                                        <ChevronLeft size={24} />
                                     </button>
+                                    <h1><strong>{currentSubject?.subject} - {currentSubject?.name}</strong></h1>
                                 </div>
                                 <p>Materiais e avaliações da disciplina</p>
-                            </>
-                        )}
-                    </div>
+                            </div>
+                            <div className="header-buttons">
+                                <button
+                                    className="btn-novo-quiz"
+                                    onClick={handleCreateNew}
+                                >
+                                    <Plus size={18} />
+                                    Criar Quiz
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </header>
 
                 {selectedSubjectId ? renderDetail() : renderGrid()}

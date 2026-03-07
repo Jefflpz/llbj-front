@@ -95,6 +95,16 @@ export function Sidebar() {
               </button>
 
               <button
+                className={`nav-link ${location.pathname === '/teacher/agenda' ? 'active' : ''}`}
+                onClick={() => navigate('/teacher/agenda')}
+                title="Agenda"
+              >
+                <div className="nav-icon-wrapper">
+                  <CalendarDays size={24} color="#515151" className="nav-icon lucide-icon" />
+                </div>
+              </button>
+
+              <button
                 className={`nav-link ${location.pathname === '/teacher/turmas' ? 'active' : ''}`}
                 onClick={() => navigate('/teacher/turmas')}
                 title="Turmas"
