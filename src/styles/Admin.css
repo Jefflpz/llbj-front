@@ -9,3 +9,138 @@
 .table {
     width: 100%;
 }
+
+.datatable {
+    width: 100%;
+    padding: 2rem;
+    min-height: 30rem;
+    background-color: #FFFFFF;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.datatable .p-paginator {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.datatable .p-paginator button:hover {
+    background-color: #F1F5F9;
+}
+
+.datatable .p-paginator .p-paginator-page {
+    width: 3rem;
+    height: 3rem;
+    font-size: 18px;
+    color: #64748B;
+    border-radius: 50%;
+}
+
+.datatable .p-paginator .p-paginator-page.p-highlight {
+    background-color: #DBEAFE;
+    color: #2563EB;
+}
+
+.datatable .p-paginator .p-paginator-prev,
+.datatable .p-paginator .p-paginator-next,
+.datatable .p-paginator .p-paginator-first,
+.datatable .p-paginator .p-paginator-last {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    color: #94A3B8;
+}
+
+.datatable .p-datatable-thead > tr > th {
+    padding: 0.75rem 1rem;
+}
+
+.datatable .p-column-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.datatable .p-column-filter-menu-button {
+    margin-left: 6px;
+    color: #9CA7C1;
+}
+
+.p-column-filter-overlay {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-width: 20rem;
+    min-height: 10rem;
+    padding: 1.5rem;
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.p-column-filter-overlay .p-column-filter-constraint {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.p-column-filter-overlay .p-inputtext {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    background: #F8FAFC;
+    color: #0F172A;
+}
+
+.p-column-filter-overlay .p-button {
+    width: 5rem;
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #CBD5E1;
+    background: #F8FAFC;
+}
+
+.p-column-filter-overlay .p-dropdown {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 40px;
+    border-radius: 8px;
+    border: 1px solid #CBD5E1;
+    background: #F8FAFC;
+}
+
+.p-column-filter-overlay .p-dropdown-trigger {
+    width: 40px;
+}
+
+.p-dropdown-item {
+    padding: 1rem;
+    font-size: 14px;
+    background-color: #FFFFFF;
+}
+
+.p-dropdown-item:hover {
+    background-color: #F1F5F9;
+}
+
+.global-search {
+    width: 100%;
+    height: 2rem;
+    padding: 1.3rem;
+    border-radius: 10px;
+    border: 1px solid #CBD5E1;
+    background-color: #F8FAFC;
+    font-size: 14px;
+}
+
+.search-header {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 1.5rem;
+}
