@@ -5,7 +5,7 @@ import { CirclePlus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { teacherService } from '../../services/teacher.service.ts';
+import { teacherService } from '../../services/teacher.service';
 import '../../styles/Admin.css';
 import { FilterMatchMode } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
@@ -29,7 +29,7 @@ export default function TeachersAdmin() {
 
   const loadTeachers = async () => {
     const response = await teacherService.findAll();
-    setTeachers(response);
+    setTeachers(response as any);
   };
 
   const [filters, setFilters] = useState<DataTableFilterMeta>({
@@ -108,7 +108,6 @@ export default function TeachersAdmin() {
             filterDisplay="menu"
             rows={5}
             size="large"
-            showGridlines
             removableSort
             className="datatable"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"

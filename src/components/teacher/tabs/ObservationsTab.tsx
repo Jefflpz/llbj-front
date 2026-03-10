@@ -1,31 +1,51 @@
-import React from 'react';
-import { Inbox, FileText } from 'lucide-react';
-import { observationsData, observationStudentData } from '../../../data/mockObservations';
+import React, { useState } from 'react';
+import { FileText, Inbox } from 'lucide-react';
+import { useObservations } from '../../../hooks/useObservations';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { FilterMatchMode } from 'primereact/api';
+import { InputText } from 'primereact/inputtext';
+import type { DataTableFilterMeta } from 'primereact/datatable';
+import '../../../styles/Admin.css';
 
-const getObservationTypeLabel = (type: '1' | '2' | '3') => {
+const getObservationTypeLabel = (type: string) => {
     switch (type) {
-        case '1': return 'Comportamento';
-        case '2': return 'Desempenho Acadêmico';
-        case '3': return 'Atraso / Frequência';
+        case 'TYPE_1': return 'Comportamento';
+        case 'TYPE_2': return 'Desempenho Acadêmico';
+        case 'TYPE_3': return 'Atraso / Frequência';
         default: return 'Outro';
     }
 };
 
-const getObservationTypeClass = (type: '1' | '2' | '3') => {
-    switch (type) {
-        case '1': return 'obs-type-1';
-        case '2': return 'obs-type-2';
-        case '3': return 'obs-type-3';
-        default: return '';
-    }
+const typeColors: Record<string, { bg: string; color: string; border: string }> = {
+    'TYPE_1': { bg: '#FEF9C3', color: '#854D0E', border: '#FDE68A' },
+    'TYPE_2': { bg: '#EFF6FF', color: '#1D4ED8', border: '#BFDBFE' },
+    'TYPE_3': { bg: '#FEE2E2', color: '#991B1B', border: '#FECACA' },
 };
 
-export function ObservationsTab({ classId, refreshTrigger }: { classId: number, refreshTrigger: number }) {
-    // We use refreshTrigger just to trick React into re-evaluating the component when mock data changes
+export function ObservationsTab({ classId, refreshTrigger }: { classId: number; refreshTrigger: number }) {
+    const { data: rawObservations, loading } = useObservations(classId);
+
     React.useEffect(() => { }, [refreshTrigger]);
 
-    // Filter observations for this class
-    const classObservations = observationsData.filter(obs => obs.class_id === classId).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    const classObservations = (rawObservations ?? []).map((obs) => {
+        const date = new Date(obs.createdAt);
+        return {
+            ...obs,
+            dateStr: date.toLocaleDateString(),
+            timeStr: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            studentCount: obs.studentIds?.length ?? 0,
+        };
+    });
+
+    const [filters, setFilters] = useState<DataTableFilterMeta>({
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        teacherRegistration: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    });
+
+    if (loading) {
+        return <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>Carregando observações...</div>;
+    }
 
     if (classObservations.length === 0) {
         return (
@@ -37,54 +57,78 @@ export function ObservationsTab({ classId, refreshTrigger }: { classId: number, 
         );
     }
 
-    return (
-        <div className="students-list-wrapper">
-            <table className="students-table">
-                <thead>
-                    <tr>
-                        <th>TIPO</th>
-                        <th>DATA / HORA</th>
-                        <th>QTD ALUNOS</th>
-                        <th>PROFESSOR</th>
-                        <th style={{ textAlign: 'right' }}>AÇÕES</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {classObservations.map(obs => {
-                        // Count linked students via N:N relation
-                        const studentCount = observationStudentData.filter(link => link.observation_id === obs.id).length;
-                        const dateObj = new Date(obs.created_at);
-                        const dateStr = dateObj.toLocaleDateString();
-                        const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                        return (
-                            <tr key={obs.id}>
-                                <td>
-                                    <span className={`status-badge ${getObservationTypeClass(obs.type)}`}>
-                                        {getObservationTypeLabel(obs.type)}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span className="registration-cell">{dateStr} {timeStr}</span>
-                                </td>
-                                <td>
-                                    <span className="class-cell">{studentCount} aluno(s)</span>
-                                </td>
-                                <td>
-                                    <span className="registration-cell">{obs.teacher_registration}</span>
-                                </td>
-                                <td>
-                                    <div className="table-actions">
-                                        <button className="btn-table-action" title="Ver Detalhes (Mensagem e Alunos)">
-                                            <FileText size={18} />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+    const header = (
+        <div className="search-header">
+            <InputText
+                className="global-search"
+                placeholder="Pesquisar observação..."
+                onChange={(e) =>
+                    setFilters({
+                        ...filters,
+                        global: { value: e.target.value, matchMode: FilterMatchMode.CONTAINS },
+                    })
+                }
+            />
         </div>
+    );
+
+    return (
+        <DataTable
+            value={classObservations}
+            paginator
+            rows={10}
+            filters={filters}
+            globalFilterFields={['teacherRegistration', 'dateStr']}
+            header={header}
+            emptyMessage="Nenhuma observação encontrada."
+            removableSort
+            size="large"
+            className="datatable"
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
+            onFilter={(e) => setFilters(e.filters)}
+        >
+            <Column
+                field="type"
+                header="Tipo"
+                sortable
+                body={(row: any) => {
+                    const c = typeColors[row.type] || typeColors['TYPE_1'];
+                    return (
+                        <span className="status-badge" style={{ backgroundColor: c.bg, color: c.color, border: `1px solid ${c.border}` }}>
+                            {getObservationTypeLabel(row.type)}
+                        </span>
+                    );
+                }}
+            />
+            <Column
+                header="Data / Hora"
+                sortable
+                body={(row: any) => (
+                    <span style={{ fontSize: '0.9rem', color: '#475569' }}>{row.dateStr} {row.timeStr}</span>
+                )}
+            />
+            <Column
+                header="Qtd Alunos"
+                body={(row: any) => (
+                    <span style={{ fontWeight: 600, color: '#1e293b' }}>{row.studentCount} aluno(s)</span>
+                )}
+            />
+            <Column
+                field="teacherRegistration"
+                header="Professor"
+                sortable
+                filter
+                filterPlaceholder="Por professor"
+                body={(row: any) => (
+                    <span style={{ fontFamily: 'monospace', fontSize: '0.85rem', color: '#64748b' }}>{row.teacherName || row.teacherRegistration}</span>
+                )}
+            />
+            <Column
+                header="Ações"
+                body={() => (
+                    <button className="btn-table-action" title="Ver Detalhes"><FileText size={16} /></button>
+                )}
+            />
+        </DataTable>
     );
 }

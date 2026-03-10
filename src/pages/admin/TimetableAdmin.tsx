@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Sidebar } from '../../components/sidebar/Sidebar';
-import { Download, Save, Trash2, Loader2 } from 'lucide-react';
+import { Save, Trash2, Loader2 } from 'lucide-react';
 import {
     DndContext,
     DragOverlay,
@@ -211,11 +211,7 @@ export default function TimetableAdmin() {
         setTimetable((prev) => prev.filter((i) => i.id !== itemId));
     };
 
-    const handleExport = () => {
-        if (selectedClassId) {
-            timetableService.exportPdf(selectedClassId, selectedPeriod);
-        }
-    };
+    // Removing unused handleExport
 
     const countAllocatedHours = () => {
         return timetable.length; // Assuming each item represents 1 hour (or 50min class)
@@ -241,9 +237,6 @@ export default function TimetableAdmin() {
                         <p>Distribua as disciplinas e gerencie o cronograma semanal.</p>
                     </div>
                     <div className="header-buttons">
-                        <button className="btn-export" onClick={handleExport}>
-                            <Download size={18} /> Exportar PDF
-                        </button>
                         <button className="btn-save" onClick={handleSave}>
                             <Save size={18} /> Salvar Grade
                         </button>

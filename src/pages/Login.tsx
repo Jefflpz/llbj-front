@@ -1,6 +1,7 @@
 import '../styles/Login.css';
 import { useState } from 'react';
 import { authService } from '../services/auth.service';
+import { teacherService } from '../services/teacher.service';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { ArrowLeft, AtSign, Lock, Eye, EyeOff, GraduationCap } from 'lucide-react';
@@ -16,10 +17,31 @@ export default function Login() {
     e.preventDefault();
     try {
       const res = await authService.login({ username, password });
-      login(res.data);
-      if (res.data.role === 'ADMIN') navigate('/admin/timetable');
-      if (res.data.role === 'TEACHER') navigate('/teacher/home');
-      if (res.data.role === 'STUDENT') navigate('/students');
+      const accountData = res.data;
+      let enriched = { ...accountData };
+      console.log(enriched);
+      // Para professor: buscar perfil para obter a registration
+      if (accountData.role === 'TEACHER') {
+        try {
+          const teachers = await teacherService.findAll();
+          const profile = teachers.find((t) => t.email === accountData.username);
+          if (profile) {
+            enriched = {
+              ...enriched,
+              name: profile.name,
+              registration: profile.registration,
+              urlImage: profile.urlImage ?? undefined,
+            };
+          }
+        } catch (e) {
+          console.warn('Não foi possível enriquecer perfil do professor:', e);
+        }
+      }
+
+      login(enriched);
+      if (accountData.role === 'ADMIN') navigate('/admin/timetable');
+      if (accountData.role === 'TEACHER') navigate('/teacher/home');
+      if (accountData.role === 'STUDENT') navigate('/students');
     } catch (err) {
       console.error('Erro no login:', err);
       alert('Usuário ou senha inválidos');

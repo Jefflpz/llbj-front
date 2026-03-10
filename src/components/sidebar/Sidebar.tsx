@@ -90,8 +90,7 @@ export function Sidebar() {
                 title="Início"
               >
                 <div className="nav-icon-wrapper">
-                  <LayoutGrid size={24} color="#515151" className="nav-icon lucide-icon" />
-                </div>
+                  <img src="/home.svg" alt="Home" className="nav-icon" />                </div>
               </button>
 
               <button

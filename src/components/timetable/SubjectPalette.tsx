@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { Subject, TimetableItem } from '../../models/timetable.model';
 import { useDraggable } from '@dnd-kit/core';
-import { Search, Info, GripVertical } from 'lucide-react';
+import { Info, GripVertical } from 'lucide-react';
 
 interface SubjectPaletteProps {
     subjects: Subject[];

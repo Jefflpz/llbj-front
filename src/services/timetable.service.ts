@@ -8,96 +8,9 @@ import type {
 /**
  * Mock data para suportar o desenvolvimento isolado da tela.
  */
-const MOCK_CLASSES: SchoolClass[] = [
-    { id: 1, name: '9º Ano A - Ensino Fundamental' },
-    { id: 2, name: '1º Ano B - Ensino Médio' },
-];
+import { api } from './api';
 
-const MOCK_SUBJECTS: Subject[] = [
-    {
-        id: 101,
-        name: 'Matemática',
-        class_id: 1,
-        teacher_registration: 'T01',
-        teacher: { registration: 'T01', name: 'Prof. Silva' },
-        weeklyTargetHours: 6,
-        category: 'CIÊNCIAS EXATAS',
-        topic: 'Equações',
-    },
-    {
-        id: 102,
-        name: 'Física',
-        class_id: 1,
-        teacher_registration: 'T02',
-        teacher: { registration: 'T02', name: 'Prof. Roberto' },
-        weeklyTargetHours: 4,
-        category: 'CIÊNCIAS EXATAS',
-    },
-    {
-        id: 108,
-        name: 'Química',
-        class_id: 1,
-        teacher_registration: 'T08',
-        teacher: { registration: 'T08', name: 'Prof. Ronaldo' },
-        weeklyTargetHours: 4,
-        category: 'CIÊNCIAS EXATAS',
-    },
-    {
-        id: 103,
-        name: 'Português',
-        class_id: 1,
-        teacher_registration: 'T03',
-        teacher: { registration: 'T03', name: 'Prof. Ana' },
-        weeklyTargetHours: 6,
-        category: 'HUMANAS',
-        topic: 'Redação',
-    },
-    {
-        id: 104,
-        name: 'História',
-        class_id: 1,
-        teacher_registration: 'T04',
-        teacher: { registration: 'T04', name: 'Prof. Carlos' },
-        weeklyTargetHours: 4,
-        category: 'HUMANAS',
-    },
-    {
-        id: 105,
-        name: 'Geografia',
-        class_id: 1,
-        teacher_registration: 'T05',
-        teacher: { registration: 'T05', name: 'Prof. Julia' },
-        weeklyTargetHours: 4,
-        category: 'HUMANAS',
-    },
-    {
-        id: 109,
-        name: 'Biologia',
-        class_id: 1,
-        teacher_registration: 'T09',
-        teacher: { registration: 'T09', name: 'Prof. Carla' },
-        weeklyTargetHours: 4,
-        category: 'NATUREZA',
-    },
-    {
-        id: 106,
-        name: 'Artes',
-        class_id: 1,
-        teacher_registration: 'T06',
-        teacher: { registration: 'T06', name: 'Prof. Marcos' },
-        weeklyTargetHours: 2,
-        category: 'ARTES & ESPORTES',
-    },
-    {
-        id: 107,
-        name: 'Ed. Física',
-        class_id: 1,
-        teacher_registration: 'T07',
-        teacher: { registration: 'T07', name: 'Prof. Paulo' },
-        weeklyTargetHours: 3,
-        category: 'ARTES & ESPORTES',
-    }
-];
+// Mock constants removed
 
 const MOCK_SLOTS_MANHA: TimetableSlot[] = [];
 const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
@@ -149,13 +62,19 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const timetableService = {
     async getClasses(): Promise<SchoolClass[]> {
-        await delay(300);
-        return MOCK_CLASSES;
+        const { data } = await api.get<SchoolClass[]>('/classes');
+        return data;
     },
 
     async getSubjectsByClass(classId: number): Promise<Subject[]> {
-        await delay(300);
-        return MOCK_SUBJECTS.filter((s) => s.class_id === classId);
+        const { data } = await api.get(`/subjects?classId=${classId}`);
+        return data.map((s: any) => ({
+            id: s.id,
+            name: s.name,
+            class_id: s.classId || classId,
+            teacher_registration: s.teacherRegistration || '',
+            teacher: { registration: s.teacherRegistration || '', name: s.teacherName || '' }
+        }));
     },
 
     async getSlots(period: string): Promise<TimetableSlot[]> {

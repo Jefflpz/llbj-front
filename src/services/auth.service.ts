@@ -9,6 +9,9 @@ export interface LoginResponseDTO {
   id: number;
   username: string;
   role: string;
+  name?: string;
+  registration?: string;
+  urlImage?: string;
 }
 
 export const authService = {

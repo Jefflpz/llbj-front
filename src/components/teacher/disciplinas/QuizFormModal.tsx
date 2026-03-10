@@ -1,19 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, CheckCircle2, Circle } from 'lucide-react';
-import { type Quiz, type QuizQuestion } from '../../../data/mockQuizzes';
-import { turmasData } from '../../../data/mockTurmas';
-import { weeklyAgendasData, classMaterialsData } from '../../../data/mockAgenda';
+import type { Quiz } from '../../../hooks/useQuizzes';
+import { useAuth } from '../../../auth/AuthContext';
+import { useSubjects } from '../../../hooks/useSubjects';
+import { useAgenda } from '../../../hooks/useAgenda';
 import './QuizFormModal.css';
+
+// Reusing same interface logic from old mock, adapted to the API
+export interface QuizQuestion {
+    id?: string;
+    title?: string;
+    text?: string;
+    options: {
+        id?: string;
+        text: string;
+        isCorrect?: boolean;
+        correct?: boolean;
+    }[];
+}
 
 interface QuizFormModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (quiz: Quiz) => void;
+    onSave: (quiz: any) => void;
     quizToEdit?: Quiz | null;
     preSelectedSubjectId?: number | null;
 }
 
 export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelectedSubjectId }: QuizFormModalProps) {
+    const { user } = useAuth();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [score, setScore] = useState<number>(10);
@@ -28,17 +43,32 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
     // Questions State
     const [questions, setQuestions] = useState<QuizQuestion[]>([]);
 
+    // API Hooks
+    const { data: subjects = [] } = useSubjects(undefined, user?.registration);
+    const { data: agendaData } = useAgenda(Number(subjectId) || 0);
+
+    const availableAgendas = subjectId ? (agendaData?.agendas || []) : [];
+    const availableMaterials = subjectId ? (agendaData?.materials || []) : [];
+
     useEffect(() => {
         if (quizToEdit) {
             setTitle(quizToEdit.title);
-            setDescription(quizToEdit.description);
+            setDescription(quizToEdit.description || '');
             setScore(quizToEdit.score);
             setReleaseDate(quizToEdit.releaseDate || '');
             setDeadline(quizToEdit.deadline || '');
             setSubjectId(quizToEdit.subjectId || '');
             setWeekId(quizToEdit.weekId || '');
             setMaterialId(quizToEdit.materialId || '');
-            setQuestions(quizToEdit.questions);
+
+            // Map the questions back to the form format
+            setQuestions(quizToEdit.questions.map((q: any) => ({
+                text: q.text || q.title || '',
+                options: (q.options || []).map((o: any) => ({
+                    text: o.text,
+                    isCorrect: o.correct || o.isCorrect || false
+                }))
+            })));
         } else {
             resetForm();
             if (preSelectedSubjectId) {
@@ -63,11 +93,10 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
 
     const handleAddQuestion = () => {
         const newQuestion: QuizQuestion = {
-            id: 'q-' + Date.now().toString(),
-            title: '',
+            text: '',
             options: [
-                { id: 'opt-' + Date.now().toString() + '-1', text: '', isCorrect: true },
-                { id: 'opt-' + Date.now().toString() + '-2', text: '', isCorrect: false }
+                { text: '', isCorrect: true },
+                { text: '', isCorrect: false }
             ]
         };
         setQuestions([...questions, newQuestion]);
@@ -75,7 +104,7 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
 
     const handleQuestionChange = (qIndex: number, newTitle: string) => {
         const updated = [...questions];
-        updated[qIndex].title = newTitle;
+        updated[qIndex].text = newTitle;
         setQuestions(updated);
     };
 
@@ -88,7 +117,6 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
     const handleAddOption = (qIndex: number) => {
         const updated = [...questions];
         updated[qIndex].options.push({
-            id: 'opt-' + Date.now().toString(),
             text: '',
             isCorrect: false
         });
@@ -119,24 +147,28 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Basic validation
         if (!title.trim() || questions.length === 0) {
             alert('Por favor, preencha o título e adicione pelo menos uma questão.');
             return;
         }
 
-        const quizData: Quiz = {
-            id: quizToEdit ? quizToEdit.id : 'qz-' + Date.now(),
+        const quizData = {
+            id: quizToEdit ? quizToEdit.id : undefined,
             title,
             description,
             score,
-            releaseDate: releaseDate || null,
-            deadline: deadline || null,
+            releaseDate: releaseDate || new Date().toISOString(),
+            deadline: deadline || new Date().toISOString(),
             subjectId: subjectId === '' ? null : Number(subjectId),
             weekId: weekId === '' ? null : Number(weekId),
             materialId: materialId === '' ? null : Number(materialId),
-            questions,
-            createdAt: quizToEdit ? quizToEdit.createdAt : new Date().toISOString()
+            questions: questions.map((q: any) => ({
+                text: q.text || q.title,
+                options: q.options.map((o: any) => ({
+                    text: o.text,
+                    correct: !!o.isCorrect
+                }))
+            })),
         };
 
         onSave(quizData);
@@ -155,7 +187,6 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
                 </div>
 
                 <form onSubmit={handleSubmit} className="quiz-form-body">
-                    {/* Linha 1: Título e Pontuação */}
                     <div className="form-row form-row-2-1">
                         <div className="form-group">
                             <label>Título do Quiz *</label>
@@ -189,7 +220,6 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
                         />
                     </div>
 
-                    {/* Linha 2: Associações (Disciplina / Agenda / Material) */}
                     <div className="form-row form-row-3">
                         <div className="form-group">
                             <label>Turma / Disciplina Alvo</label>
@@ -198,27 +228,26 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
                                 onChange={e => setSubjectId(e.target.value === '' ? '' : Number(e.target.value))}
                                 disabled={!!preSelectedSubjectId}
                             >
-                                <option value="">-- Sem vínculo --</option>
-                                {turmasData.map(t => (
-                                    <option key={t.id} value={t.id}>{t.name} ({t.subject})</option>
+                                <option value="">-- Selecione a disciplina --</option>
+                                {(subjects || []).map(s => (
+                                    <option key={s.id} value={s.id}>{s.name} ({s.className})</option>
                                 ))}
                             </select>
                         </div>
                         <div className="form-group">
                             <label>Vincular à Agenda</label>
-                            <select value={weekId} onChange={e => setWeekId(e.target.value === '' ? '' : Number(e.target.value))}>
+                            <select value={weekId} onChange={e => setWeekId(e.target.value === '' ? '' : Number(e.target.value))} disabled={!subjectId}>
                                 <option value="">-- Nenhuma Semana --</option>
-                                {weeklyAgendasData.map(w => (
+                                {availableAgendas.map(w => (
                                     <option key={w.id} value={w.id}>{w.weekName}</option>
                                 ))}
                             </select>
                         </div>
                         <div className="form-group">
                             <label>Material de Apoio (Aula)</label>
-                            <select value={materialId} onChange={e => setMaterialId(e.target.value === '' ? '' : Number(e.target.value))}>
+                            <select value={materialId} onChange={e => setMaterialId(e.target.value === '' ? '' : Number(e.target.value))} disabled={!subjectId}>
                                 <option value="">-- Nenhum --</option>
-                                {classMaterialsData
-                                    // Optionally filter by selected week
+                                {availableMaterials
                                     .filter(m => weekId === '' || m.weekId === Number(weekId))
                                     .map(m => (
                                         <option key={m.id} value={m.id}>{m.title}</option>
@@ -227,7 +256,6 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
                         </div>
                     </div>
 
-                    {/* Linha 3: Datas */}
                     <div className="form-row form-row-2">
                         <div className="form-group">
                             <label>Data de Liberação</label>
@@ -247,7 +275,6 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
                         </div>
                     </div>
 
-                    {/* SEÇÃO DE QUESTÕES */}
                     <hr className="quiz-divider" />
 
                     <div className="questions-header">
@@ -262,7 +289,7 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
                             <p className="no-questions-text">Nenhuma questão adicionada ainda. Clique no botão acima.</p>
                         )}
                         {questions.map((q, qIndex) => (
-                            <div key={q.id} className="question-card">
+                            <div key={qIndex} className="question-card">
                                 <div className="question-card-header">
                                     <span className="question-number">Questão {qIndex + 1}</span>
                                     <button type="button" className="btn-remove-question" onClick={() => handleRemoveQuestion(qIndex)} title="Remover Questão">
@@ -272,7 +299,7 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
                                 <div className="form-group">
                                     <input
                                         type="text"
-                                        value={q.title}
+                                        value={q.text}
                                         onChange={e => handleQuestionChange(qIndex, e.target.value)}
                                         placeholder="Digite o enunciado da questão..."
                                         required
@@ -282,7 +309,7 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
 
                                 <div className="options-list">
                                     {q.options.map((opt, oIndex) => (
-                                        <div key={opt.id} className={`option-row ${opt.isCorrect ? 'option-correct' : ''}`}>
+                                        <div key={oIndex} className={`option-row ${opt.isCorrect ? 'option-correct' : ''}`}>
                                             <button
                                                 type="button"
                                                 className="btn-mark-correct"

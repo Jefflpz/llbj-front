@@ -1,123 +1,127 @@
-import { Search, ChevronLeft, ChevronRight, MoreVertical, User, FileText, Mail } from 'lucide-react';
+import { FileText } from 'lucide-react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { FilterMatchMode } from 'primereact/api';
+import { InputText } from 'primereact/inputtext';
+import { useState } from 'react';
+import type { DataTableFilterMeta } from 'primereact/datatable';
+import '../../../styles/Admin.css';
 
 export function StudentsTab({
     studentsInClass,
     currentTurmaName,
     selectedStudentIds,
-    handleSelectAll,
-    handleSelectStudent,
+    onSelectionChange,
     onNavigateToGrades
 }: any) {
+    const [filters, setFilters] = useState<DataTableFilterMeta>({
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        registration: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        status: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    });
+
+    const header = (
+        <div className="search-header">
+            <InputText
+                className="global-search"
+                placeholder="Pesquisar estudante..."
+                onChange={(e) =>
+                    setFilters({
+                        ...filters,
+                        global: { value: e.target.value, matchMode: FilterMatchMode.CONTAINS },
+                    })
+                }
+            />
+        </div>
+    );
+
     return (
-        <>
-            <div className="filters-container">
-                <div className="search-bar-wrapper">
-                    <Search className="search-icon" size={20} />
-                    <input
-                        type="text"
-                        placeholder="Pesquisar estudante por nome, matrícula ou disciplina..."
-                        className="search-input"
+        <DataTable
+            value={studentsInClass}
+            selectionMode="checkbox"
+            selection={studentsInClass.filter((s: any) => selectedStudentIds.includes(s.id))}
+            onSelectionChange={(e) => onSelectionChange(e.value.map((s: any) => s.id))}
+            dataKey="id"
+            paginator
+            rows={10}
+            filters={filters}
+            globalFilterFields={['name', 'registration', 'status']}
+            header={header}
+            emptyMessage="Nenhum aluno encontrado."
+            filterDisplay="menu"
+            removableSort
+            size="large"
+            className="datatable"
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
+            onFilter={(e) => setFilters(e.filters)}
+        >
+            <Column selectionMode="multiple" headerStyle={{ width: '3rem' }}></Column>
+            <Column
+                field="urlImage"
+                header="Foto"
+                body={(row: any) => (
+                    <img
+                        src={row.urlImage}
+                        alt={row.name}
+                        style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }}
                     />
-                </div>
-                <div className="dropdown-filters">
-                    <select className="filter-select">
-                        <option>Departamento</option>
-                    </select>
-                    <select className="filter-select">
-                        <option>Status</option>
-                    </select>
-                    <select className="filter-select">
-                        <option>Turno</option>
-                    </select>
-                </div>
-            </div>
-
-            <div className="students-list-wrapper">
-                <table className="students-table">
-                    <thead>
-                        <tr>
-                            <th style={{ width: '40px' }}>
-                                <input
-                                    type="checkbox"
-                                    className="table-checkbox"
-                                    checked={selectedStudentIds.length === studentsInClass.length && studentsInClass.length > 0}
-                                    onChange={handleSelectAll}
-                                />
-                            </th>
-                            <th>ESTUDANTE</th>
-                            <th>MATRÍCULA</th>
-                            <th>TURMA</th>
-                            <th>STATUS</th>
-                            <th style={{ textAlign: 'right' }}>AÇÕES</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {studentsInClass.map((student: any) => (
-                            <tr key={student.id} className={selectedStudentIds.includes(student.id) ? 'row-selected' : ''}>
-                                <td>
-                                    <input
-                                        type="checkbox"
-                                        className="table-checkbox"
-                                        checked={selectedStudentIds.includes(student.id)}
-                                        onChange={(e) => handleSelectStudent(student.id, e.target.checked)}
-                                    />
-                                </td>
-                                <td>
-                                    <div className="student-info-cell">
-                                        <img src={student.urlImage} alt={student.name} className="student-avatar" />
-                                        <div className="student-details">
-                                            <h3>{student.name}</h3>
-                                            <span>{student.email}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span className="registration-cell">{student.registration || 'MAT-202301'}</span>
-                                </td>
-                                <td>
-                                    <span className="class-cell">{currentTurmaName}</span>
-                                </td>
-                                <td>
-                                    <span className={`status-badge ${(student.status || 'Ativo').toLowerCase()}`}>
-                                        {student.status || 'Ativo'}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div className="table-actions">
-                                        <button className="btn-table-action" title="Ver Perfil">
-                                            <User size={18} />
-                                        </button>
-                                        <button
-                                            className="btn-table-action"
-                                            title="Ver Notas"
-                                            onClick={onNavigateToGrades}
-                                        >
-                                            <FileText size={18} />
-                                        </button>
-                                        <button className="btn-table-action" title="Enviar Mensagem">
-                                            <Mail size={18} />
-                                        </button>
-                                        <button className="btn-table-action" title="Mais Opções">
-                                            <MoreVertical size={18} />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-
-                <div className="pagination-footer">
-                    <span className="count-info">Exibindo {studentsInClass.length} de {studentsInClass.length} estudantes</span>
-                    <div className="pagination-controls">
-                        <button className="page-btn arrow"><ChevronLeft size={18} /></button>
-                        <button className="page-btn active">1</button>
-                        <button className="page-btn">2</button>
-                        <button className="page-btn">3</button>
-                        <button className="page-btn arrow"><ChevronRight size={18} /></button>
+                )}
+            />
+            <Column
+                field="name"
+                header="Estudante"
+                sortable
+                filter
+                filterPlaceholder="Por nome"
+                body={(row: any) => (
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontWeight: 600, color: '#1e293b' }}>{row.name}</span>
+                        <span style={{ fontSize: '0.82rem', color: '#94a3b8' }}>{row.email}</span>
                     </div>
-                </div>
-            </div>
-        </>
+                )}
+            />
+            <Column
+                field="registration"
+                header="Matrícula"
+                sortable
+                filter
+                filterPlaceholder="Por matrícula"
+                body={(row: any) => (
+                    <span style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#475569' }}>
+                        {row.registration || 'MAT-202301'}
+                    </span>
+                )}
+            />
+            <Column
+                header="Turma"
+                body={() => (
+                    <span style={{ fontSize: '0.9rem', color: '#64748b' }}>{currentTurmaName}</span>
+                )}
+            />
+            <Column
+                field="status"
+                header="Status"
+                sortable
+                filter
+                filterPlaceholder="Por status"
+                body={(row: any) => {
+                    const st = row.status || 'Ativo';
+                    return (
+                        <span className={`status-badge ${st === 'Ativo' ? 'status-active' : 'status-inactive'}`}>
+                            {st}
+                        </span>
+                    );
+                }}
+            />
+            <Column
+                header="Ações"
+                body={(_row: any) => (
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button className="btn-table-action" title="Ver Notas" onClick={onNavigateToGrades}><FileText size={16} /></button>
+                    </div>
+                )}
+            />
+        </DataTable>
     );
 }

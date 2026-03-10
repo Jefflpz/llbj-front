@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Users } from 'lucide-react';
 import './ObservationModal.css';
 
@@ -20,7 +20,7 @@ interface ObservationModalProps {
     studentsInClass: Student[];
     selectedStudentIds: string[];
     onRecipientChange: (newSelectedIds: string[]) => void;
-    onSend: (type: '1' | '2' | '3', message: string, selectedIds: string[]) => void;
+    onSend: (type: 'TYPE_1' | 'TYPE_2' | 'TYPE_3', message: string, selectedIds: string[]) => void;
 }
 
 export function ObservationModal({
@@ -70,10 +70,10 @@ export function ObservationModal({
             return;
         }
 
-        const validTypes = ['1', '2', '3'] as const;
+        const validTypes = ['TYPE_1', 'TYPE_2', 'TYPE_3'] as const;
         if (!validTypes.includes(observationType as any)) return;
 
-        onSend(observationType as '1' | '2' | '3', observationText, selectedStudentIds);
+        onSend(observationType as 'TYPE_1' | 'TYPE_2' | 'TYPE_3', observationText, selectedStudentIds);
         handleClose();
     };
 
@@ -98,7 +98,7 @@ export function ObservationModal({
                             ) : isAllSelected ? (
                                 <div className="recipient-chip turma-chip">
                                     <div className="chip-icon"><Users size={14} /></div>
-                                    <span className="chip-label">Turma: {currentTurma.name}</span>
+                                    <span className="chip-label">Turma: {currentTurma?.name || 'Turma Inteira'}</span>
                                     <button type="button" className="btn-remove-chip" onClick={handleRemoveAll}>
                                         <X size={14} />
                                     </button>
@@ -130,9 +130,9 @@ export function ObservationModal({
                             className={showError && !observationType ? 'input-error' : ''}
                         >
                             <option value="">Selecione o tipo...</option>
-                            <option value="1">Tipo 1 - Comportamento</option>
-                            <option value="2">Tipo 2 - Desempenho Acadêmico</option>
-                            <option value="3">Tipo 3 - Atraso / Frequência</option>
+                            <option value="TYPE_1">Tipo 1 - Comportamento</option>
+                            <option value="TYPE_2">Tipo 2 - Desempenho Acadêmico</option>
+                            <option value="TYPE_3">Tipo 3 - Atraso / Frequência</option>
                         </select>
                     </div>
 

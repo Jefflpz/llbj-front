@@ -12,6 +12,7 @@ interface User {
   username: string;
   role: string;
   name?: string;
+  registration?: string;
   className?: string;
   urlImage?: string;
 }
