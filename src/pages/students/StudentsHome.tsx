@@ -23,10 +23,10 @@ export default function StudentHome() {
       ]);
 
       const mySubjects = subRes.data.filter(
-        (s: any) => s.classId === (student.classId || student.class_id),
+        (s: any) => s.classId === ((student as any).classId || (student as any).class_id),
       );
       const myGrades = gradeRes.data.filter(
-        (g: any) => g.studentId === (student.studentId || student.id),
+        (g: any) => g.studentId === ((student as any).studentId || student.id),
       );
 
       reportService.generateBoletim(student, mySubjects, myGrades);
@@ -73,7 +73,7 @@ export default function StudentHome() {
         <div className="dashboard-body">
           <section className="schedule-section">
             <div className="card">
-              <WeeklySchedule classId={student?.classId} />
+              <WeeklySchedule classId={(student as any)?.classId || (student as any)?.class_id} />
             </div>
           </section>
         </div>
@@ -81,7 +81,7 @@ export default function StudentHome() {
         <ObservationsDrawer
           open={openObs}
           onClose={() => setOpenObs(false)}
-          studentId={student?.studentId || student?.id}
+          studentId={(student as any)?.studentId || student?.id}
         />
       </main>
     </div>

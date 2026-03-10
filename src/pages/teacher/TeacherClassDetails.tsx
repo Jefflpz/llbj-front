@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Sidebar } from '../../components/sidebar/Sidebar';
 import { Breadcrumbs } from '../../components/common/Breadcrumbs';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronLeft, Plus } from 'lucide-react';
-import { turmasData } from '../../data/mockTurmas';
-import { studentsData } from '../../data/mockStudents';
 import { ObservationModal } from '../../components/modals/ObservationModal';
-import { addObservationTransaction } from '../../data/mockObservations';
+import { classesService } from '../../services/classes.service';
+import { studentsService } from '../../services/students.service';
+import { observationService } from '../../services/observations.service';
+import { useAuth } from '../../auth/AuthContext';
+import { useSubjects } from '../../hooks/useSubjects';
 import { StudentsTab } from '../../components/teacher/tabs/StudentsTab';
 import { ObservationsTab } from '../../components/teacher/tabs/ObservationsTab';
 import { GradesTab } from '../../components/teacher/tabs/GradesTab';
@@ -27,19 +29,31 @@ function formatDate(date: Date) {
 export default function TeacherClassDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
     const dateLabel = formatDate(today);
 
-    const currentTurma = turmasData.find(t => t.id === Number(id));
-    const studentsInClass = studentsData.filter(s => s.classId === Number(id));
+    const [currentTurma, setCurrentTurma] = useState<{ id: number; name: string } | null>(null);
+    const [studentsInClass, setStudentsInClass] = useState<{ id: string; name: string; urlImage?: string | undefined }[]>([]);
+
+    const classId = Number(id) || 0;
+    const { data: subjects } = useSubjects(classId, user?.registration);
+
+    // Attempt to display first related subject
+    const headerSubjectName = subjects && subjects.length > 0 ? ` - ${subjects[0].name}` : '';
+
+    useEffect(() => {
+        classesService.findById(classId).then(setCurrentTurma).catch(() => setCurrentTurma(null));
+        studentsService.findByClass(classId)
+            .then((students) => setStudentsInClass(students.map((s) => ({ ...s, urlImage: s.urlImage ?? undefined }))))
+            .catch(() => setStudentsInClass([]));
+    }, [classId]);
 
     // Determine active tab from URL query params (default to 'alunos')
     const activeTab = searchParams.get('tab') || 'alunos';
 
     const [isObservationModalOpen, setIsObservationModalOpen] = useState(false);
     const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
-
-    // We add a dummy state to force re-render when a new observation is added (since we mutate the mock directly)
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
@@ -54,27 +68,21 @@ export default function TeacherClassDetails() {
         setSearchParams({ tab: tabName });
     };
 
-    const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.checked) {
-            setSelectedStudentIds(studentsInClass.map(s => s.id));
-        } else {
-            setSelectedStudentIds([]);
-        }
-    };
-
-    const handleSelectStudent = (studentId: string, checked: boolean) => {
-        if (checked) {
-            setSelectedStudentIds(prev => [...prev, studentId]);
-        } else {
-            setSelectedStudentIds(prev => prev.filter(id => id !== studentId));
-        }
-    };
-
-    const handleSendObservation = (type: '1' | '2' | '3', message: string, selectedIds: string[]) => {
+    const handleSendObservation = async (type: 'TYPE_1' | 'TYPE_2' | 'TYPE_3', message: string, selectedIds: string[]) => {
         if (!currentTurma) return;
-        addObservationTransaction(currentTurma.id, 'PROF-Logado', message, type, selectedIds);
-        setRefreshTrigger(prev => prev + 1); // Force tab re-render to fetch new data
-        handleTabChange('observacoes'); // Switch to history tab to see it
+        try {
+            await observationService.create({
+                classId: currentTurma.id,
+                teacherRegistration: 'PROF-Logado', // TODO: usar registration do usuário logado
+                message,
+                type,
+                studentIds: selectedIds,
+            });
+        } catch (e) {
+            console.error('Erro ao criar observação:', e);
+        }
+        setRefreshTrigger(prev => prev + 1);
+        handleTabChange('observacoes');
     };
 
     // Navigation handler that can be passed to children component
@@ -83,7 +91,7 @@ export default function TeacherClassDetails() {
     };
 
     if (!currentTurma) {
-        return <div>Turma não encontrada</div>;
+        return <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>Carregando turma...</div>;
     }
 
     return (
@@ -98,25 +106,36 @@ export default function TeacherClassDetails() {
                             { label: 'Minhas Turmas', path: '/teacher/turmas' },
                             { label: currentTurma.name },
                         ]} />
-                        <div className="header-with-back">
-                            <div className="header-title-group">
-                                <button onClick={() => navigate('/teacher/turmas')} className="btn-back">
-                                    <ChevronLeft size={24} />
-                                </button>
-                                <h1><strong>Acadêmico - {currentTurma.name}</strong></h1>
-                            </div>
-                            {activeTab === 'alunos' && (
-                                <button
-                                    className="btn-nova-observacao"
-                                    onClick={() => setIsObservationModalOpen(true)}
-                                >
-                                    <Plus size={18} />
-                                    Lançar Observação
-                                </button>
-                            )}
+                        <div className="header-title-group">
+                            <button onClick={() => navigate('/teacher/turmas')} className="btn-back">
+                                <ChevronLeft size={24} />
+                            </button>
+                            <h1><strong>{currentTurma.name}{headerSubjectName}</strong></h1>
                         </div>
                         <p>{dateLabel}</p>
                     </div>
+
+                    {activeTab === 'alunos' && (
+                        <div className="header-buttons">
+                            {selectedStudentIds.length > 0 && (
+                                <span style={{ color: '#64748b', fontSize: '0.9rem', marginRight: '1rem' }}>
+                                    {selectedStudentIds.length} selecionado(s)
+                                </span>
+                            )}
+                            <button
+                                className="btn-nova-observacao"
+                                onClick={() => {
+                                    if (selectedStudentIds.length === 0) {
+                                        setSelectedStudentIds(studentsInClass.map(s => s.id));
+                                    }
+                                    setIsObservationModalOpen(true);
+                                }}
+                            >
+                                <Plus size={18} />
+                                {selectedStudentIds.length > 0 ? 'Lançar Observação em Lote' : 'Lançar Observações'}
+                            </button>
+                        </div>
+                    )}
                 </header>
 
                 {/* Tabs Navigation */}
@@ -148,8 +167,7 @@ export default function TeacherClassDetails() {
                             studentsInClass={studentsInClass}
                             currentTurmaName={currentTurma.name}
                             selectedStudentIds={selectedStudentIds}
-                            handleSelectAll={handleSelectAll}
-                            handleSelectStudent={handleSelectStudent}
+                            onSelectionChange={setSelectedStudentIds}
                             onNavigateToGrades={onNavigateToGrades}
                         />
                     )}
@@ -159,7 +177,7 @@ export default function TeacherClassDetails() {
                     )}
 
                     {activeTab === 'notas' && (
-                        <GradesTab />
+                        <GradesTab classId={currentTurma.id} studentsInClass={studentsInClass} />
                     )}
 
                 </div>

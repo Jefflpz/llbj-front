@@ -17,6 +17,26 @@
     gap: 1rem;
 }
 
+.btn-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: none;
+    background-color: #f8fafc;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
+    transform: translateX(-2px);
+}
+
 .btn-nova-observacao {
     display: flex;
     align-items: center;

@@ -12,48 +12,54 @@
 
 .datatable {
     width: 100%;
-    padding: 2rem;
+    padding: 1.5rem;
     min-height: 30rem;
     background-color: #FFFFFF;
     border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #E2E8F0;
+    overflow: hidden;
 }
 
-.datatable .p-paginator {
-    display: flex;
-    justify-content: center;
-    margin-top: 1.5rem;
+.datatable .p-datatable-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #F1F5F9;
 }
 
-.datatable .p-paginator button:hover {
+.datatable .p-datatable-table {
+    border-collapse: collapse;
+}
+
+.datatable .p-datatable-thead>tr>th {
+    padding: 1rem 1.25rem;
+    background-color: #F8FAFC;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: left;
+    border-bottom: 2px solid #E2E8F0;
+    border-width: 0 0 2px 0;
+}
+
+.datatable .p-datatable-tbody>tr {
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.datatable .p-datatable-tbody>tr:nth-child(even) {
+    background-color: #FAFAF9;
+}
+
+.datatable .p-datatable-tbody>tr:hover {
     background-color: #F1F5F9;
 }
 
-.datatable .p-paginator .p-paginator-page {
-    width: 3rem;
-    height: 3rem;
-    font-size: 18px;
-    color: #64748B;
-    border-radius: 50%;
-}
-
-.datatable .p-paginator .p-paginator-page.p-highlight {
-    background-color: #DBEAFE;
-    color: #2563EB;
-}
-
-.datatable .p-paginator .p-paginator-prev,
-.datatable .p-paginator .p-paginator-next,
-.datatable .p-paginator .p-paginator-first,
-.datatable .p-paginator .p-paginator-last {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    color: #94A3B8;
-}
-
-.datatable .p-datatable-thead > tr > th {
-    padding: 0.75rem 1rem;
+.datatable .p-datatable-tbody>tr>td {
+    padding: 1rem 1.25rem;
+    color: #334155;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #F1F5F9;
+    border-width: 0 0 1px 0;
 }
 
 .datatable .p-column-header-content {
@@ -128,19 +134,112 @@
     background-color: #F1F5F9;
 }
 
+.datatable .p-paginator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E2E8F0;
+    gap: 1.5rem;
+}
+
+.datatable .p-paginator-pages {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.datatable .p-paginator button {
+    transition: all 0.2s;
+}
+
+.datatable .p-paginator button:hover {
+    background-color: #F1F5F9;
+}
+
+.datatable .p-paginator .p-paginator-page {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 14px;
+    font-weight: 500;
+    color: #64748B;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.datatable .p-paginator .p-paginator-page.p-highlight {
+    background-color: #EFF6FF;
+    color: #3B82F6;
+    font-weight: 600;
+    box-shadow: 0 0 0 1px #BFDBFE;
+}
+
+.datatable .p-paginator .p-paginator-prev,
+.datatable .p-paginator .p-paginator-next,
+.datatable .p-paginator .p-paginator-first,
+.datatable .p-paginator .p-paginator-last {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    color: #64748B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .global-search {
     width: 100%;
-    height: 2rem;
-    padding: 1.3rem;
-    border-radius: 10px;
-    border: 1px solid #CBD5E1;
+    height: 3rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: 50px;
+    border: 1px solid #E2E8F0;
     background-color: #F8FAFC;
-    font-size: 14px;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.global-search:focus {
+    outline: none;
+    border-color: #93C5FD;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background-color: #FFFFFF;
 }
 
 .search-header {
     width: 100%;
-    display: flex;
-    justify-content: flex-start;
     margin-bottom: 1.5rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-active {
+    background-color: #DCFCE7;
+    color: #166534;
+    border: 1px solid #BBF7D0;
+}
+
+.status-inactive {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid #FECACA;
+}
+
+/* Hide the check icon inside the PrimeReact selection column to make it cleaner */
+.p-selection-column .p-checkbox-icon {
+    display: none !important;
+}
+
+.datatable .p-datatable-tbody > tr.p-highlight {
+    background: #f1f5f9;
+    color: inherit;
 }

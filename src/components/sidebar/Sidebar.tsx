@@ -90,7 +90,16 @@ export function Sidebar() {
                 title="Início"
               >
                 <div className="nav-icon-wrapper">
-                  <LayoutGrid size={24} color="#515151" className="nav-icon lucide-icon" />
+                  <img src="/home.svg" alt="Home" className="nav-icon" />                </div>
+              </button>
+
+              <button
+                className={`nav-link ${location.pathname === '/teacher/agenda' ? 'active' : ''}`}
+                onClick={() => navigate('/teacher/agenda')}
+                title="Agenda"
+              >
+                <div className="nav-icon-wrapper">
+                  <CalendarDays size={24} color="#515151" className="nav-icon lucide-icon" />
                 </div>
               </button>
 

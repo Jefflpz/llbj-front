@@ -1,3 +1,7 @@
+import { useMemo } from 'react';
+import { useQuery } from '../../hooks/useQuery';
+import { timetableService } from '../../services/timetable.service';
+import { useSubjects } from '../../hooks/useSubjects';
 import './Schedule.css';
 
 interface ScheduleProps {
@@ -6,70 +10,55 @@ interface ScheduleProps {
 
 export default function WeeklySchedule({ classId }: ScheduleProps) {
   const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
-  const periods = ['07:00', '08:20', '09:10', '10:00', '10:50', '11:40'];
 
-  const hardcodedSchedules: Record<number, any[]> = {
-    1: [
-      {
-        day: 'Segunda',
-        time: '07:00',
-        subjectName: 'Matemática',
-        teacherName: 'Diogo Martins',
-        color: '#E2E9FF',
-      },
-      {
-        day: 'Segunda',
-        time: '08:20',
-        subjectName: 'Matemática',
-        teacherName: 'Diogo Martins',
-        color: '#E2E9FF',
-      },
-      {
-        day: 'Terça',
-        time: '07:00',
-        subjectName: 'Português',
-        teacherName: 'Marcelo Grilo',
-        color: '#FFF5E2',
-      },
-      {
-        day: 'Quarta',
-        time: '09:10',
-        subjectName: 'História',
-        teacherName: 'Marcelo Modolo',
-        color: '#E2FBE5',
-      },
-      {
-        day: 'Quinta',
-        time: '10:00',
-        subjectName: 'Geografia',
-        teacherName: 'Carlos Santi',
-        color: '#F4E2FF',
-      },
-      {
-        day: 'Sexta',
-        time: '11:40',
-        subjectName: 'Ciência',
-        teacherName: 'Marcio Welker',
-        color: '#FFE2E2',
-      },
-    ],
-    2: [
-      {
-        day: 'Segunda',
-        time: '07:00',
-        subjectName: 'História',
-        teacherName: 'Marcelo Modolo',
-        color: '#E2FBE5',
-      },
-    ],
-  };
+  const { data: subjects = [] } = useSubjects(classId);
 
-  const schedules = classId ? hardcodedSchedules[classId] || [] : [];
+  // Define fetchers para slots e grade
+  const slotsFetcher = useMemo(() => () => timetableService.getSlots('Manhã'), []);
+  const { data: slots = [] } = useQuery(slotsFetcher);
+
+  const timetableFetcher = useMemo(() => {
+    return classId ? () => timetableService.getTimetable(classId, 'Manhã') : () => Promise.resolve([]);
+  }, [classId]);
+
+  const { data: timetableItems = [], loading: loadingTimetable } = useQuery(timetableFetcher, [classId]);
+
+  // Extract unique periods from slots
+  const periods = useMemo(() => {
+    const sList = slots || [];
+    const uniqueStarts = Array.from(new Set(sList.filter(s => !s.is_break).map(s => s.start_time)));
+    return uniqueStarts.sort();
+  }, [slots]);
+
+  const schedules = useMemo(() => {
+    const items = timetableItems || [];
+    const subs = subjects || [];
+
+    return items.map(item => {
+      const subject = subs.find(s => s.id === item.subject_id);
+
+      let color = '#E2E8F0'; // Default gray
+      if (subject?.name?.toLowerCase().includes('matemática')) color = '#E2E9FF';
+      else if (subject?.name?.toLowerCase().includes('português')) color = '#FFF5E2';
+      else if (subject?.name?.toLowerCase().includes('história')) color = '#E2FBE5';
+      else if (subject?.name?.toLowerCase().includes('geografia')) color = '#F4E2FF';
+      else if (subject?.name?.toLowerCase().includes('ciência')) color = '#FFE2E2';
+
+      return {
+        day: item.day_of_week,
+        time: item.start_time,
+        subjectName: subject?.name || 'Desconhecido',
+        teacherName: subject?.teacherRegistration || 'Desconhecido',
+        color
+      };
+    });
+  }, [timetableItems, subjects, slots]);
 
   return (
     <div className="schedule-card-inner">
       <div className="schedule-header">
         <h3>Horário de Aulas</h3>
+        {loadingTimetable && <span style={{ fontSize: '0.85rem', color: '#64748b', marginLeft: '1rem' }}>Carregando...</span>}
       </div>
 
       <div className="schedule-grid">

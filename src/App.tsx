@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext';
 import Login from './pages/Login';
 import Initial from './pages/Initial';
+import Register from './pages/Register';
 import StudentsPage from './pages/students/StudentsHome';
 import SubjectsPage from './pages/students/SubjectsPage';
 import TimetableAdmin from './pages/admin/TimetableAdmin';
@@ -12,6 +13,7 @@ import TeacherHome from './pages/teacher/TeacherHome';
 import TeacherTurmas from './pages/teacher/TeacherTurmas';
 import TeacherSubjects from './pages/teacher/TeacherSubjects';
 import TeacherClassDetails from './pages/teacher/TeacherClassDetails';
+import TeacherAgenda from './pages/teacher/TeacherAgenda';
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -32,6 +34,7 @@ function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/initial" element={<Initial />} />
+      <Route path="/primeiro-acesso" element={<Register />} />
       <Route path="/students" element={<StudentsPage />} />
       <Route path="/subjects" element={<SubjectsPage />} />
 
@@ -91,6 +94,14 @@ function App() {
         element={
           <TeacherRoute>
             <TeacherSubjects />
+          </TeacherRoute>
+        }
+      />
+      <Route
+        path="/teacher/agenda"
+        element={
+          <TeacherRoute>
+            <TeacherAgenda />
           </TeacherRoute>
         }
       />

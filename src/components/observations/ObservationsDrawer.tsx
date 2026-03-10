@@ -33,8 +33,8 @@ export default function ObservationsDrawer({
         teacherService.findAll(),
       ])
         .then(([obsRes, teachRes]) => {
-          setObservations(obsRes.data);
-          setTeachers(teachRes.data);
+          setObservations(obsRes);
+          setTeachers(teachRes);
         })
         .catch((err) => console.error('Erro na sincronização:', err))
         .finally(() => setLoading(false));

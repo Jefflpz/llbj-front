@@ -1,83 +1,282 @@
-import { useEffect, useState } from 'react';
-import { api } from '../../services/api';
-import { useStudent } from '../../hooks/useStudent';
+import { useState, useMemo } from 'react';
 import { Sidebar } from '../../components/sidebar/Sidebar';
-import SubjectCard from '../../components/subjects/SubjectCard';
-import SubjectDetail from '../../components/subjects/SubjectDetail';
-import '../../styles/Subjects.css';
+import { Breadcrumbs } from '../../components/common/Breadcrumbs';
+import { BookOpen, Users, ChevronLeft, Target, Calendar, Clock, Loader2, Play, FileText, Download } from 'lucide-react';
+import { useStudent } from '../../hooks/useStudent';
+import { useSubjects } from '../../hooks/useSubjects';
+import { useQuizzes } from '../../hooks/useQuizzes';
+import { useAgenda } from '../../hooks/useAgenda';
+import { useQuery } from '../../hooks/useQuery';
+import { api } from '../../services/api';
+import '../teacher/TeacherTurmas.css';
+import '../teacher/TeacherSubjects.css';
 
 export default function SubjectsPage() {
   const { student, loading: studentLoading } = useStudent();
-  const [subjects, setSubjects] = useState<any[]>([]);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [search, setSearch] = useState('');
+  const idTurma = (student as any)?.classId || (student as any)?.class_id;
+  const studentId = (student as any)?.studentId || student?.id;
 
-  useEffect(() => {
-    const idTurma = student?.classId || student?.class_id;
+  const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null);
 
-    if (idTurma) {
-      api
-        .get('/subjects')
-        .then((res) => {
-          const filtered = res.data.filter((s: any) => s.classId === idTurma);
-          setSubjects(filtered);
+  // Fetch subjects by class
+  const { data: subjects, loading: subjectsLoading, error: subjectsError } = useSubjects(idTurma);
 
-          if (filtered.length > 0 && !selectedId) {
-            setSelectedId(filtered[0].id);
-          }
-        })
-        .catch((err) => console.error('Erro ao buscar disciplinas:', err));
+  // Fetch details for selected subject
+  const { data: quizzesData, loading: loadingQuizzes } = useQuizzes(selectedSubjectId || 0);
+  const { data: agendaData, loading: loadingAgenda } = useAgenda(selectedSubjectId || 0);
+
+  // Fetch Grades
+  const gradesFetcher = useMemo(() => () => selectedSubjectId ? api.get('/grades').then(r => r.data.filter((g: any) => g.subjectId === selectedSubjectId && g.studentId === studentId)) : Promise.resolve([]), [selectedSubjectId, studentId]);
+  const { data: gradesData = [], loading: loadingGrades } = useQuery(gradesFetcher, [selectedSubjectId, studentId]);
+
+  const quizzes = selectedSubjectId ? (quizzesData || []) : [];
+  const subjectMaterials = selectedSubjectId ? (agendaData?.materials || []) : [];
+  const agendas = selectedSubjectId ? (agendaData?.agendas || []) : [];
+
+  // Derived values
+  const currentSubject = subjects?.find(s => s.id === selectedSubjectId);
+  const isLoadingGlobal = studentLoading || subjectsLoading;
+
+  const formatDateTime = (isoString: string | null) => {
+    if (!isoString) return '--';
+    try {
+      const date = new Date(isoString);
+      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+      return '--';
     }
-  }, [student, selectedId]);
+  };
 
-  const currentSubject = subjects.find((s) => s.id === selectedId);
+  const getAgendaName = (weekId: number | null) => {
+    if (!weekId) return 'Semana não associada';
+    const agenda = agendas.find(a => a.id === weekId);
+    return agenda ? agenda.weekName : 'Semana Desconhecida';
+  };
 
-  if (studentLoading) return <div>Carregando...</div>;
+  const renderGrid = () => {
+    if (isLoadingGlobal) {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '4rem', color: '#64748b' }}>
+          <Loader2 size={40} style={{ animation: 'spin 1s linear infinite' }} />
+          <p>Carregando suas disciplinas...</p>
+        </div>
+      );
+    }
+    if (subjectsError) {
+      return (
+        <div style={{ textAlign: 'center', padding: '3rem', color: '#ef4444' }}><p>{subjectsError}</p></div>
+      );
+    }
+    if (!subjects || subjects.length === 0) {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '4rem', color: '#94a3b8' }}>
+          <BookOpen size={48} />
+          <p>Nenhuma disciplina encontrada para sua turma.</p>
+        </div>
+      );
+    }
 
-  return (
-    <div className="student-layout">
-      {' '}
-      <Sidebar />
-      <main className="student-content">
-        <div className="subjects-layout">
-          <aside className="subjects-sidebar">
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder="Pesquise a disciplina..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+    return (
+      <div className="turmas-container">
+        <div className="turmas-grid">
+          {subjects.map((turma) => (
+            <div key={turma.id} className="turma-card">
+              <div className="card-top-badges">
+                <div className="subject-icon-badge icon-badge--blue"><BookOpen size={24} /></div>
+                <div className="info-badge info-badge--students">
+                  <Users size={16} /> Prof. {turma.teacherName || 'Não atribuído'}
+                </div>
+                <div className="info-badge info-badge--status status--active">ATIVO</div>
+              </div>
+              <div className="card-title-group">
+                <h2>{turma.name}</h2>
+                <span className="subject-name">{turma.className}</span>
+              </div>
+              <button className="btn-select-turma" onClick={() => setSelectedSubjectId(turma.id)}>Acessar Disciplina</button>
             </div>
-            <div className="subjects-list">
-              {subjects
-                .filter((s) =>
-                  s.name.toLowerCase().includes(search.toLowerCase()),
-                )
-                .map((sub) => (
-                  <SubjectCard
-                    key={sub.id}
-                    subject={sub}
-                    active={selectedId === sub.id}
-                    onClick={() => setSelectedId(sub.id)}
-                  />
-                ))}
-            </div>
-          </aside>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
-          <section className="subject-main-content">
-            {currentSubject ? (
-              <SubjectDetail
-                subject={currentSubject}
-                studentId={student?.studentId || student?.id}
-              />
+  const renderDetail = () => {
+    if (!currentSubject) return null;
+    const isLoadingAux = loadingQuizzes || loadingAgenda || loadingGrades;
+    const quarters = ['1º Bimestre', '2º Bimestre', '3º Bimestre', '4º Bimestre'];
+
+    return (
+      <div className="subject-details-container" style={{ padding: '0 2rem 2rem 2rem' }}>
+        <div className="details-content">
+
+          {/* Grades Section (Added for Students) */}
+          <div className="details-section bg-transparent mb-8">
+            <div className="section-header">
+              <div className="section-title-wrapper">
+                <Target size={20} className="section-icon text-blue" />
+                <h2>Seu Desempenho</h2>
+              </div>
+            </div>
+            {loadingGrades ? (
+              <div className="p-8"><Loader2 className="animate-spin text-blue-500" /></div>
             ) : (
-              <div className="empty-state">
-                <p>Nenhuma disciplina encontrada ou selecionada.</p>
+              <div className="quarters-wrapper" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                {quarters.map((qTitle, idx) => {
+                  const rawQuarter = `Q${idx + 1}`;
+                  const gradeRec = gradesData.find((g: any) => g.quarter === rawQuarter);
+                  const value = gradeRec?.value || 0;
+                  const isPass = value >= 6;
+                  const color = value > 0 ? (isPass ? '#16a34a' : '#ea580c') : '#94a3b8';
+
+                  return (
+                    <div key={qTitle} className="turma-card" style={{ flex: '1 1 200px', padding: '1.5rem', height: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      <span style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b' }}>{qTitle}</span>
+                      <div style={{ fontSize: '2.5rem', fontWeight: 700, color }}>
+                        {value > 0 ? value.toFixed(1) : '--'}
+                      </div>
+                      <div style={{ height: '6px', borderRadius: '4px', background: '#f1f5f9', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${value * 10}%`, background: color }}></div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
-          </section>
+          </div>
+
+          {/* Materiais Didáticos Section */}
+          <div className="details-section bg-transparent">
+            <div className="section-header">
+              <div className="section-title-wrapper">
+                <BookOpen size={20} className="section-icon text-blue" />
+                <h2>Materiais de Apoio</h2>
+                {!isLoadingAux && <span className="counter-badge">{subjectMaterials.length}</span>}
+              </div>
+            </div>
+            {loadingAgenda ? (
+              <div className="p-8"><Loader2 className="animate-spin text-blue-500" /></div>
+            ) : (
+              <div className="cards-list">
+                {subjectMaterials.length === 0 ? (
+                  <div className="empty-card">Nenhum material disponibilizado ainda.</div>
+                ) : (
+                  subjectMaterials.map((mat: any) => (
+                    <div key={mat.id} className="turma-card" style={{ height: 'auto', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: '1.5rem', width: '100%' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <div className="subject-icon-badge bg-blue-light" style={{ width: '48px', height: '48px', margin: 0 }}>
+                          {mat.type === 'PDF' ? <FileText size={24} className="text-blue" /> : <Play size={24} className="text-blue" />}
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <h2 style={{ fontSize: '1.15rem', color: '#1e293b', margin: '0 0 0.4rem 0' }}>{mat.title}</h2>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <div className="info-badge info-badge--students" style={{ backgroundColor: '#f8fafc', color: '#64748b', padding: '0.2rem 0.6rem', fontSize: '0.8rem' }}>
+                              {mat.type}
+                            </div>
+                            <span className="subject-name" style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0 }}>{getAgendaName(mat.weekId)}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <button className="btn-select-turma" style={{ width: 'auto', padding: '0.75rem 1.5rem', margin: 0 }}>
+                        <Download size={18} style={{ marginRight: '0.5rem' }} /> Baixar
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Quizzes Section */}
+          <div className="details-section bg-transparent mt-8">
+            <div className="section-header">
+              <div className="section-title-wrapper">
+                <Target size={20} className="section-icon text-blue" />
+                <h2>Avaliações Pendentes</h2>
+                {!isLoadingAux && <span className="counter-badge">{quizzes.length}</span>}
+              </div>
+            </div>
+            {loadingQuizzes ? (
+              <div className="p-8"><Loader2 className="animate-spin text-blue-500" /></div>
+            ) : (
+              <div className="cards-list">
+                {quizzes.length === 0 ? (
+                  <div className="empty-card">Nenhuma avaliação cadastrada no momento.</div>
+                ) : (
+                  quizzes.map((quiz: any) => (
+                    <div key={quiz.id} className="turma-card" style={{ height: 'auto', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: '1.5rem', width: '100%' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <div className="subject-icon-badge bg-green-light" style={{ width: '48px', height: '48px', margin: 0 }}>
+                          <Target size={24} className="text-green" />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.4rem' }}>
+                            <h2 style={{ fontSize: '1.15rem', color: '#1e293b', margin: 0 }}>{quiz.title}</h2>
+                          </div>
+                          <span className="subject-name" style={{ fontSize: '0.9rem', marginBottom: '0.6rem', display: 'block' }}>
+                            {quiz.description || `Teste de conhecimentos valendo ${quiz.score} pontos.`}
+                          </span>
+                          <div style={{ display: 'flex', gap: '1.5rem' }}>
+                            <span className="subject-level" style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem', margin: 0 }}>
+                              <Calendar size={14} /> Liberado: {formatDateTime(quiz.releaseDate)}
+                            </span>
+                            <span className="subject-level" style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem', margin: 0 }}>
+                              <Clock size={14} /> Entrega: {formatDateTime(quiz.deadline)}
+                            </span>
+                            <span className="subject-level" style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem', margin: 0, fontWeight: 600, color: '#0ea5e9' }}>
+                              {quiz.score} Pontos
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <button className="btn-select-turma" style={{ width: 'auto', padding: '0.75rem 1.5rem', margin: 0, backgroundColor: '#0ea5e9', borderColor: '#0ea5e9' }}>
+                        Resolver
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
         </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="timetable-admin-page">
+      <Sidebar />
+      <main className="timetable-content">
+        <header className="timetable-header">
+          {!selectedSubjectId ? (
+            <div className="timetable-title">
+              <Breadcrumbs items={[
+                { label: 'Início', path: '/' },
+                { label: 'Minhas Disciplinas' },
+              ]} />
+              <div>
+                <h1><strong>Suas Disciplinas</strong></h1>
+                <p>Acesse o material, avaliações e progresso de cada matéria.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="timetable-title">
+              <Breadcrumbs items={[
+                { label: 'Início', path: '/' },
+                { label: 'Disciplinas', path: '#' },
+                { label: currentSubject?.name || 'Detalhes' }
+              ]} />
+              <div className="header-title-group">
+                <button onClick={() => setSelectedSubjectId(null)} className="btn-back">
+                  <ChevronLeft size={24} />
+                </button>
+                <h1><strong>{currentSubject?.name}</strong></h1>
+              </div>
+              <p>Prof. {currentSubject?.teacherName || 'Não atribuído'}</p>
+            </div>
+          )}
+        </header>
+
+        {selectedSubjectId ? renderDetail() : renderGrid()}
       </main>
     </div>
   );
