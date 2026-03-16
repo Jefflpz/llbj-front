@@ -80,7 +80,7 @@ export default function StudentsAdmin() {
       email: student.email,
       registration: student.registration,
       classId: student.classId,
-      urlImage: student.urlImage
+      urlImage: student.urlImage ?? ''
     });
 
     setVisible(true);
@@ -149,7 +149,21 @@ export default function StudentsAdmin() {
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
             onFilter={(e) => setFilters(e.filters)}
           >
-            <Column field="urlImage" header="Foto" />
+            <Column
+              header="Foto"
+              body={(rowData: Student) => (
+                <img
+                  src={rowData.urlImage ?? ''}
+                  alt={rowData.name}
+                  style={{
+                    width: '50px',
+                    height: '50px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                  }}
+                />
+              )}
+            />
             <Column field="id" header="Código" sortable />
             <Column
               field="name"
@@ -276,7 +290,7 @@ export default function StudentsAdmin() {
               className="btn-save"
               onClick={async () => {
                 if (!selectedStudent.id) {
-                    await studentsService.create(selectedStudent);
+                  await studentsService.create(selectedStudent);
                 } else {
                   await studentsService.update(
                     selectedStudent.id,

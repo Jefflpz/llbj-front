@@ -12,12 +12,13 @@ export interface Student {
 }
 
 export interface StudentRequest {
-    id?: number;
-    name: string;
-    email: string;
-    registration: string;
-    classId: number;
-    urlImage?: string | null;
+  id?: number;
+  name: string;
+  email: string;
+  registration: string;
+  classId: number;
+  urlImage?: string | null;
+  status?: string;
 }
 
 export const studentsService = {
