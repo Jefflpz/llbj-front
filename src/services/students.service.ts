@@ -1,7 +1,7 @@
 import { api } from './api';
 
 export interface Student {
-    id: string;
+    id: number;
     name: string;
     email: string;
     registration: string;
@@ -12,13 +12,13 @@ export interface Student {
 }
 
 export interface StudentRequest {
-    id: string;
-    name: string;
-    email: string;
-    registration: string;
-    classId: number;
-    urlImage?: string | null;
-    userId: number;
+  id?: number;
+  name: string;
+  email: string;
+  registration: string;
+  classId: number;
+  urlImage?: string | null;
+  status?: string;
 }
 
 export const studentsService = {
@@ -34,9 +34,9 @@ export const studentsService = {
     create: (dto: StudentRequest): Promise<Student> =>
         api.post<Student>('/students', dto).then((r) => r.data),
 
-    update: (id: string, dto: StudentRequest): Promise<Student> =>
+    update: (id: number, dto: StudentRequest): Promise<Student> =>
         api.put<Student>(`/students/${id}`, dto).then((r) => r.data),
 
-    delete: (id: string): Promise<void> =>
+    delete: (id: number): Promise<void> =>
         api.delete(`/students/${id}`).then(() => undefined),
 };
