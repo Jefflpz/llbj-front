@@ -70,7 +70,7 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({ slots, items, subj
                                     (i) => i.day_of_week === day && i.start_time === time.start
                                 );
 
-                                const subject = mappedItem
+                                const subject = mappedItem && subjects
                                     ? subjects.find((sub) => sub.id === mappedItem.subject_id)
                                     : undefined;
 

@@ -5,12 +5,7 @@ import type {
     TimetableSlot,
 } from '../models/timetable.model';
 
-/**
- * Mock data para suportar o desenvolvimento isolado da tela.
- */
 import { api } from './api';
-
-// Mock constants removed
 
 const MOCK_SLOTS_MANHA: TimetableSlot[] = [];
 const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
@@ -36,26 +31,35 @@ days.forEach((day) => {
 });
 
 let MOCK_TIMETABLE: TimetableItem[] = [
-    {
-        id: 1,
-        class_id: 1,
-        period: 'Manhã',
-        day_of_week: 'Segunda',
-        start_time: '07:00',
-        end_time: '07:50',
-        subject_id: 101, // Matemática
-        active: 1,
-    },
-    {
-        id: 2,
-        class_id: 1,
-        period: 'Manhã',
-        day_of_week: 'Segunda',
-        start_time: '07:50',
-        end_time: '08:40',
-        subject_id: 102, // Física
-        active: 1,
-    },
+    { id: 1, class_id: 1, period: 'Manhã', day_of_week: 'Segunda', start_time: '07:00', end_time: '07:50', subject_id: 101, active: 1 },
+    { id: 2, class_id: 1, period: 'Manhã', day_of_week: 'Segunda', start_time: '07:50', end_time: '08:40', subject_id: 101, active: 1 },
+    { id: 3, class_id: 1, period: 'Manhã', day_of_week: 'Segunda', start_time: '09:00', end_time: '09:50', subject_id: 103, active: 1 },
+    { id: 4, class_id: 1, period: 'Manhã', day_of_week: 'Segunda', start_time: '09:50', end_time: '10:40', subject_id: 103, active: 1 },
+    { id: 5, class_id: 1, period: 'Manhã', day_of_week: 'Segunda', start_time: '10:40', end_time: '11:30', subject_id: 105, active: 1 },
+    
+    { id: 6, class_id: 1, period: 'Manhã', day_of_week: 'Terça', start_time: '07:00', end_time: '07:50', subject_id: 104, active: 1 },
+    { id: 7, class_id: 1, period: 'Manhã', day_of_week: 'Terça', start_time: '07:50', end_time: '08:40', subject_id: 104, active: 1 },
+    { id: 8, class_id: 1, period: 'Manhã', day_of_week: 'Terça', start_time: '09:00', end_time: '09:50', subject_id: 102, active: 1 },
+    { id: 9, class_id: 1, period: 'Manhã', day_of_week: 'Terça', start_time: '09:50', end_time: '10:40', subject_id: 102, active: 1 },
+    { id: 10, class_id: 1, period: 'Manhã', day_of_week: 'Terça', start_time: '10:40', end_time: '11:30', subject_id: 108, active: 1 },
+
+    { id: 11, class_id: 1, period: 'Manhã', day_of_week: 'Quarta', start_time: '07:00', end_time: '07:50', subject_id: 109, active: 1 },
+    { id: 12, class_id: 1, period: 'Manhã', day_of_week: 'Quarta', start_time: '07:50', end_time: '08:40', subject_id: 109, active: 1 },
+    { id: 13, class_id: 1, period: 'Manhã', day_of_week: 'Quarta', start_time: '09:00', end_time: '09:50', subject_id: 101, active: 1 },
+    { id: 14, class_id: 1, period: 'Manhã', day_of_week: 'Quarta', start_time: '09:50', end_time: '10:40', subject_id: 101, active: 1 },
+    { id: 15, class_id: 1, period: 'Manhã', day_of_week: 'Quarta', start_time: '10:40', end_time: '11:30', subject_id: 106, active: 1 },
+
+    { id: 16, class_id: 1, period: 'Manhã', day_of_week: 'Quinta', start_time: '07:00', end_time: '07:50', subject_id: 103, active: 1 },
+    { id: 17, class_id: 1, period: 'Manhã', day_of_week: 'Quinta', start_time: '07:50', end_time: '08:40', subject_id: 103, active: 1 },
+    { id: 18, class_id: 1, period: 'Manhã', day_of_week: 'Quinta', start_time: '09:00', end_time: '09:50', subject_id: 107, active: 1 },
+    { id: 19, class_id: 1, period: 'Manhã', day_of_week: 'Quinta', start_time: '09:50', end_time: '10:40', subject_id: 107, active: 1 },
+    { id: 20, class_id: 1, period: 'Manhã', day_of_week: 'Quinta', start_time: '10:40', end_time: '11:30', subject_id: 108, active: 1 },
+
+    { id: 21, class_id: 1, period: 'Manhã', day_of_week: 'Sexta', start_time: '07:00', end_time: '07:50', subject_id: 105, active: 1 },
+    { id: 22, class_id: 1, period: 'Manhã', day_of_week: 'Sexta', start_time: '07:50', end_time: '08:40', subject_id: 109, active: 1 },
+    { id: 23, class_id: 1, period: 'Manhã', day_of_week: 'Sexta', start_time: '09:00', end_time: '09:50', subject_id: 102, active: 1 },
+    { id: 24, class_id: 1, period: 'Manhã', day_of_week: 'Sexta', start_time: '09:50', end_time: '10:40', subject_id: 104, active: 1 },
+    { id: 25, class_id: 1, period: 'Manhã', day_of_week: 'Sexta', start_time: '10:40', end_time: '11:30', subject_id: 106, active: 1 },
 ];
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -80,7 +84,7 @@ export const timetableService = {
     async getSlots(period: string): Promise<TimetableSlot[]> {
         await delay(300);
         if (period === 'Manhã') return MOCK_SLOTS_MANHA;
-        return []; // Para simplificar, só implementamos Manhã no mock
+        return [];
     },
 
     async getTimetable(classId: number, period: string): Promise<TimetableItem[]> {
@@ -96,11 +100,9 @@ export const timetableService = {
         items: TimetableItem[],
     ): Promise<void> {
         await delay(500);
-        // Remove os antigas
         MOCK_TIMETABLE = MOCK_TIMETABLE.filter(
             (t) => !(t.class_id === classId && t.period === period),
         );
-        // Salva as novas
         items.forEach((item, index) => {
             MOCK_TIMETABLE.push({ ...item, id: Date.now() + index });
         });

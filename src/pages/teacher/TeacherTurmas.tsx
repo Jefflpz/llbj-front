@@ -41,7 +41,6 @@ export default function TeacherTurmas() {
     useEffect(() => {
         const registration = user?.registration;
         if (!registration) {
-            // Se não tem registration no contexto, não conseguimos filtrar
             setError('Perfil do professor não carregado. Faça login novamente.');
             setLoading(false);
             return;
@@ -50,18 +49,14 @@ export default function TeacherTurmas() {
         const load = async () => {
             try {
                 setLoading(true);
-                // 1. Buscar todas as disciplinas do professor
                 const subjects = await subjectsService.findByTeacher(registration);
 
-                // 2. Extrair classIds únicos
                 const uniqueClassIds = [...new Set(subjects.map((s) => s.classId))];
 
-                // 3. Buscar detalhes de cada turma
                 const classDetails = await Promise.all(
                     uniqueClassIds.map((id) => classesService.findById(id))
                 );
 
-                // 4. Montar turmas com suas disciplinas
                 const combined: TurmaWithSubjects[] = classDetails.map((cls) => ({
                     ...cls,
                     subjects: subjects.filter((s) => s.classId === cls.id),
@@ -96,7 +91,6 @@ export default function TeacherTurmas() {
                 </header>
 
                 <div className="turmas-container">
-                    {/* Estado de carregamento */}
                     {loading && (
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '4rem', color: '#64748b' }}>
                             <Loader2 size={40} style={{ animation: 'spin 1s linear infinite' }} />
@@ -104,14 +98,12 @@ export default function TeacherTurmas() {
                         </div>
                     )}
 
-                    {/* Erro */}
                     {!loading && error && (
                         <div style={{ textAlign: 'center', padding: '3rem', color: '#ef4444' }}>
                             <p>{error}</p>
                         </div>
                     )}
 
-                    {/* Vazio */}
                     {!loading && !error && turmas.length === 0 && (
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '4rem', color: '#94a3b8' }}>
                             <Inbox size={48} />
@@ -120,7 +112,6 @@ export default function TeacherTurmas() {
                         </div>
                     )}
 
-                    {/* Grid de turmas */}
                     {!loading && !error && turmas.length > 0 && (
                         <div className="turmas-grid">
                             {turmas.map((turma) => (

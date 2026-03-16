@@ -1,6 +1,6 @@
 import { api } from './api';
 
-export type ObservationType = 'TYPE_1' | 'TYPE_2' | 'TYPE_3';
+export type ObservationType = 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
 
 export interface Observation {
   id: number;

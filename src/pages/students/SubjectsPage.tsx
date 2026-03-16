@@ -8,6 +8,7 @@ import { useQuizzes } from '../../hooks/useQuizzes';
 import { useAgenda } from '../../hooks/useAgenda';
 import { useQuery } from '../../hooks/useQuery';
 import { api } from '../../services/api';
+import { QuizResolverModal } from '../../components/students/QuizResolverModal';
 import '../teacher/TeacherTurmas.css';
 import '../teacher/TeacherSubjects.css';
 
@@ -17,6 +18,7 @@ export default function SubjectsPage() {
   const studentId = (student as any)?.studentId || student?.id;
 
   const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null);
+  const [activeQuiz, setActiveQuiz] = useState<any>(null);
 
   // Fetch subjects by class
   const { data: subjects, loading: subjectsLoading, error: subjectsError } = useSubjects(idTurma);
@@ -103,7 +105,6 @@ export default function SubjectsPage() {
   const renderDetail = () => {
     if (!currentSubject) return null;
     const isLoadingAux = loadingQuizzes || loadingAgenda || loadingGrades;
-    const quarters = ['1º Bimestre', '2º Bimestre', '3º Bimestre', '4º Bimestre'];
 
     return (
       <div className="subject-details-container" style={{ padding: '0 2rem 2rem 2rem' }}>
@@ -121,25 +122,55 @@ export default function SubjectsPage() {
               <div className="p-8"><Loader2 className="animate-spin text-blue-500" /></div>
             ) : (
               <div className="quarters-wrapper" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                {quarters.map((qTitle, idx) => {
-                  const rawQuarter = `Q${idx + 1}`;
-                  const gradeRec = gradesData.find((g: any) => g.quarter === rawQuarter);
-                  const value = gradeRec?.value || 0;
-                  const isPass = value >= 6;
-                  const color = value > 0 ? (isPass ? '#16a34a' : '#ea580c') : '#94a3b8';
+                {[
+                  { title: '1º Trimestre (N1)', key: 'n1' },
+                  { title: '2º Trimestre (N2)', key: 'n2' },
+                  { title: '3º Trimestre (N3)', key: 'n3' }
+                ].map((item) => {
+                  const studentGradeRecord = gradesData.length > 0 ? gradesData[0] : null;
+                  const value = studentGradeRecord ? studentGradeRecord[item.key] : null;
+                  const isPass = value !== null && value >= 6;
+                  const color = value !== null ? (isPass ? '#16a34a' : '#ea580c') : '#94a3b8';
 
                   return (
-                    <div key={qTitle} className="turma-card" style={{ flex: '1 1 200px', padding: '1.5rem', height: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                      <span style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b' }}>{qTitle}</span>
+                    <div key={item.title} className="turma-card" style={{ flex: '1 1 200px', padding: '1.5rem', height: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      <span style={{ fontSize: '1rem', fontWeight: 600, color: '#1e293b' }}>{item.title}</span>
                       <div style={{ fontSize: '2.5rem', fontWeight: 700, color }}>
-                        {value > 0 ? value.toFixed(1) : '--'}
+                        {value !== null ? Number(value).toFixed(1) : '--'}
                       </div>
                       <div style={{ height: '6px', borderRadius: '4px', background: '#f1f5f9', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${value * 10}%`, background: color }}></div>
+                        <div style={{ height: '100%', width: value !== null ? `${Number(value) * 10}%` : '0%', background: color }}></div>
                       </div>
                     </div>
                   );
                 })}
+                
+                {/* Final Average */}
+                {(() => {
+                  const studentGradeRecord = gradesData.length > 0 ? gradesData[0] : null;
+                  let sum = 0;
+                  let count = 0;
+                  if (studentGradeRecord?.n1 != null) { sum += studentGradeRecord.n1; count++; }
+                  if (studentGradeRecord?.n2 != null) { sum += studentGradeRecord.n2; count++; }
+                  if (studentGradeRecord?.n3 != null) { sum += studentGradeRecord.n3; count++; }
+                  
+                  const avg = count > 0 ? sum / count : null;
+                  const isPass = avg !== null && avg >= 6;
+                  const color = avg !== null ? (isPass ? '#16a34a' : '#ea580c') : '#94a3b8';
+
+                  return (
+                    <div className="turma-card" style={{ flex: '1 1 200px', padding: '1.5rem', height: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', background: '#f8fafc', border: '2px dashed #cbd5e1' }}>
+                      <span style={{ fontSize: '1rem', fontWeight: 600, color: '#475569' }}>Média Final</span>
+                      <div style={{ fontSize: '2.5rem', fontWeight: 700, color }}>
+                        {avg !== null ? avg.toFixed(1) : '--'}
+                      </div>
+                      <div style={{ height: '6px', borderRadius: '4px', background: '#e2e8f0', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: avg !== null ? `${avg * 10}%` : '0%', background: color }}></div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
               </div>
             )}
           </div>
@@ -228,7 +259,11 @@ export default function SubjectsPage() {
                           </div>
                         </div>
                       </div>
-                      <button className="btn-select-turma" style={{ width: 'auto', padding: '0.75rem 1.5rem', margin: 0, backgroundColor: '#0ea5e9', borderColor: '#0ea5e9' }}>
+                      <button 
+                        className="btn-select-turma" 
+                        style={{ width: 'auto', padding: '0.75rem 1.5rem', margin: 0, backgroundColor: '#0ea5e9', borderColor: '#0ea5e9' }}
+                        onClick={() => setActiveQuiz(quiz)}
+                      >
                         Resolver
                       </button>
                     </div>
@@ -251,6 +286,7 @@ export default function SubjectsPage() {
             <div className="timetable-title">
               <Breadcrumbs items={[
                 { label: 'Início', path: '/' },
+                { label: 'Aluno' },
                 { label: 'Minhas Disciplinas' },
               ]} />
               <div>
@@ -277,6 +313,12 @@ export default function SubjectsPage() {
         </header>
 
         {selectedSubjectId ? renderDetail() : renderGrid()}
+
+        <QuizResolverModal 
+            isOpen={!!activeQuiz}
+            quiz={activeQuiz}
+            onClose={() => setActiveQuiz(null)}
+        />
       </main>
     </div>
   );
