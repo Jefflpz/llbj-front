@@ -1,7 +1,7 @@
 import { Sidebar } from '../../components/sidebar/Sidebar';
-import '../../styles/AdminTimetable.css';
+import '../../styles/Admin.css';
 import { Breadcrumbs } from '../../components/common/Breadcrumbs';
-import { CirclePlus } from 'lucide-react';
+import { CirclePlus, Pencil, Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -10,6 +10,7 @@ import '../../styles/Admin.css';
 import { FilterMatchMode } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
 import type { DataTableFilterMeta } from 'primereact/datatable';
+import { Dialog } from 'primereact/dialog';
 
 interface Teacher {
   urlImage: string;
@@ -18,10 +19,15 @@ interface Teacher {
   registration: string;
   subject: string;
   status: string;
+  accountId: number;
 }
 
 export default function TeachersAdmin() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [visible, setVisible] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(
+    null,
+  );
 
   useEffect(() => {
     loadTeachers();
@@ -59,6 +65,42 @@ export default function TeachersAdmin() {
     </div>
   );
 
+  const handleCreate = () => {
+    setSelectedTeacher({
+      urlImage: '',
+      name: '',
+      email: '',
+      registration: '',
+      subject: '',
+      status: '',
+      accountId: 0
+    } as any);
+    setVisible(true);
+  };
+
+  const handleDelete = async (accountId: number) => {
+    if (window.confirm('Tem certeza que deseja excluir?')) {
+      await teacherService.delete(accountId.toString());
+      loadTeachers();
+    }
+  };
+
+  const handleEdit = (teacher: Teacher) => {
+    setSelectedTeacher(teacher);
+    setVisible(true);
+  };
+
+  const actions = (rowData: Teacher) => (
+    <div className="actions-column">
+      <button className="btn-edit" onClick={() => handleEdit(rowData)}>
+        <Pencil size={18} />
+      </button>
+      <button className="btn-delete" onClick={() => handleDelete(rowData.accountId)}>
+        <Trash2 size={18} />
+      </button>
+    </div>
+  );
+
   return (
     <div className="timetable-admin-page">
       <Sidebar />
@@ -78,7 +120,7 @@ export default function TeachersAdmin() {
             <p>Bem-vindo ao painel de controle de professores.</p>
           </div>
           <div className="header-buttons">
-            <button className="btn-save">
+            <button className="btn-save" onClick={() => handleCreate()}>
               <CirclePlus size={18} /> Novo Registro
             </button>
           </div>
@@ -165,9 +207,116 @@ export default function TeachersAdmin() {
               filter
               filterPlaceholder="Procurar por status"
             ></Column>
+            <Column header="Ações" body={actions} />
           </DataTable>
         </section>
       </main>
+
+      <Dialog
+        header={
+          !selectedTeacher?.accountId ? 'Criar Professor' : 'Editar Professor'
+        }
+        visible={visible}
+        dismissableMask
+        className="modal"
+        onHide={() => {
+          setVisible(false);
+          setSelectedTeacher(null);
+        }}
+      >
+        {selectedTeacher && (
+          <div className="modal-fields">
+            <div className="field">
+              <label>Foto</label>
+              <InputText
+                value={selectedTeacher.urlImage}
+                className="input-modal"
+                onChange={(e) =>
+                  setSelectedTeacher({
+                    ...selectedTeacher,
+                    urlImage: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Nome</label>
+              <InputText
+                value={selectedTeacher.name}
+                className="input-modal"
+                onChange={(e) =>
+                  setSelectedTeacher({
+                    ...selectedTeacher,
+                    name: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>E-mail</label>
+              <InputText
+                value={selectedTeacher.email}
+                className="input-modal"
+                onChange={(e) =>
+                  setSelectedTeacher({
+                    ...selectedTeacher,
+                    email: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Disciplina</label>
+              <InputText
+                value={selectedTeacher.subject}
+                className="input-modal"
+                onChange={(e) =>
+                  setSelectedTeacher({
+                    ...selectedTeacher,
+                    subject: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Status</label>
+              <InputText
+                value={selectedTeacher.status}
+                className="input-modal"
+                onChange={(e) =>
+                  setSelectedTeacher({
+                    ...selectedTeacher,
+                    status: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <button
+              className="btn-save"
+              onClick={async () => {
+                if (!selectedTeacher?.accountId) {
+                  await teacherService.create(selectedTeacher);
+                } else {
+                  await teacherService.update(
+                    selectedTeacher?.accountId.toString(),
+                    selectedTeacher,
+                  );
+                }
+                alert('Disciplina salva com sucesso!');
+                setVisible(false);
+                loadTeachers();
+              }}
+            >
+              Salvar
+            </button>
+          </div>
+        )}
+      </Dialog>
     </div>
   );
 }

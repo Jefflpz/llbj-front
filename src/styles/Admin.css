@@ -243,3 +243,59 @@
     background: #f1f5f9;
     color: inherit;
 }
+
+button {
+    background: none;
+    border: none;
+    margin: 0;
+    cursor: pointer;
+    color: inherit;
+}
+
+.modal {
+    width: 30rem;
+    padding: 1rem;
+    background: #f1f5f9;
+    border-radius: 1rem;
+}
+
+.modal .p-dialog-header {
+    text-align: center;
+    font-weight: 600;
+}
+
+.modal .p-dialog-content {
+    padding: 2rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.field label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #334155;
+}
+
+.btn-save {
+    margin-top: 1rem;
+    align-self: flex-end;
+}
+
+.input-modal {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    background: #F8FAFC;
+    color: #0F172A;
+    gap: 1rem;
+}
+
+.modal-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
