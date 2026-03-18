@@ -290,8 +290,9 @@ button {
     font-size: 14px;
     border-radius: 8px;
     background: #F8FAFC;
-    color: #0F172A;
+    border: 1px solid #60666e;
     gap: 1rem;
+    height: 2rem;
 }
 
 .modal-fields {
