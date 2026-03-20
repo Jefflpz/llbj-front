@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import type { Subject, TimetableItem } from '../../models/timetable.model';
+import React from 'react';
+import type { Subject } from '../../models/timetable.model';
 import { useDraggable } from '@dnd-kit/core';
 import { Info, GripVertical } from 'lucide-react';
+import type { TimetableItem } from '../../models/timetable.model';
 
 interface SubjectPaletteProps {
     subjects: Subject[];
@@ -52,9 +53,8 @@ const PaletteDraggableItem: React.FC<{ subject: Subject; itemsAllocated: number 
 };
 
 export const SubjectPalette: React.FC<SubjectPaletteProps> = ({ subjects, timetableItems }) => {
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = React.useState('');
 
-    // Group by category
     const categoriesMap = new Map<string, Subject[]>();
 
     subjects
@@ -111,8 +111,6 @@ export const SubjectPalette: React.FC<SubjectPaletteProps> = ({ subjects, timeta
                     </div>
                 ))}
             </div>
-
-
         </div>
     );
 };

@@ -1,0 +1,282 @@
+/* QuizResolverModal.css */
+
+.resolver-modal-content {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.resolver-modal-header {
+    background: linear-gradient(to right, #f8fafc, #f1f5f9);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.resolver-header-info {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.resolver-icon-wrap {
+    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+    color: white;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.2);
+}
+
+.resolver-title {
+    font-size: 1.5rem;
+    color: #0f172a;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.resolver-desc {
+    margin: 0.5rem 0 0 0;
+    color: #64748b;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.resolver-modal-body {
+    padding: 2.5rem 3rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Progress bar inside the modal */
+.resolver-progress-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.95rem;
+    background: #f8fafc;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+}
+
+.resolver-question-title {
+    font-size: 1.25rem;
+    color: #1e293b;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    font-weight: 600;
+}
+
+/* Options */
+.resolver-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.resolver-option-item {
+    padding: 1.25rem 1.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.resolver-option-item:hover {
+    border-color: #93c5fd;
+    background-color: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.resolver-option-item.selected {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+}
+
+.resolver-radio-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.resolver-option-item.selected .resolver-radio-circle {
+    border-color: #3b82f6;
+    background-color: #3b82f6;
+}
+
+.resolver-radio-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: white;
+    transform: scale(0);
+    transition: transform 0.2s ease;
+}
+
+.resolver-option-item.selected .resolver-radio-dot {
+    transform: scale(1);
+}
+
+.resolver-option-text {
+    color: #475569;
+    font-size: 1.05rem;
+    font-weight: 400;
+    line-height: 1.5;
+    transition: color 0.2s ease;
+}
+
+.resolver-option-item.selected .resolver-option-text {
+    color: #1e40af;
+    font-weight: 500;
+}
+
+/* Bottom Controls */
+.resolver-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.btn-resolver-nav {
+    padding: 0.875rem 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-resolver-back {
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    color: #64748b;
+}
+
+.btn-resolver-back:hover:not(:disabled) {
+    background-color: #f1f5f9;
+    color: #334155;
+}
+
+.btn-resolver-back:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f8fafc;
+}
+
+.btn-resolver-next {
+    border: none;
+    background-color: #3b82f6;
+    color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.btn-resolver-next:hover:not(:disabled) {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.4);
+}
+
+.btn-resolver-next:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #94a3b8;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Success Screen */
+.resolver-success-screen {
+    text-align: center;
+    padding: 3rem 1rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.resolver-success-icon {
+    color: #10b981;
+    margin: 0 auto 1.5rem auto;
+    animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.resolver-success-title {
+    font-size: 2rem;
+    color: #0f172a;
+    margin-bottom: 1rem;
+    font-weight: 800;
+}
+
+.resolver-success-text {
+    color: #64748b;
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-resolver-finish {
+    padding: 1rem 2.5rem;
+    background: linear-gradient(to right, #0ea5e9, #2563eb);
+    color: white;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-resolver-finish:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 15px 20px -3px rgba(14, 165, 233, 0.4);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); opacity: 1; }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}

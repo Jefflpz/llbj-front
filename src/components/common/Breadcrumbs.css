@@ -22,7 +22,6 @@
 
 .breadcrumb-link {
     color: #3b82f6;
-    /* Blue matching the image */
     text-decoration: none;
     transition: color 0.2s, text-decoration 0.2s;
 }
@@ -34,17 +33,14 @@
 
 .breadcrumb-text {
     color: #4b5563;
-    /* Gray matching the image */
 }
 
 .breadcrumb-text.active {
     color: #111827;
-    /* Darker near black for the current page */
     font-weight: 600;
 }
 
 .breadcrumb-separator {
     color: #9ca3af;
-    /* Light gray chevron */
     flex-shrink: 0;
 }

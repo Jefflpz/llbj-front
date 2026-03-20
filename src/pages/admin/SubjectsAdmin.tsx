@@ -159,8 +159,6 @@ export default function SubjectsAdmin() {
                 style={{ width: '25%' }}
                 sortable={true}
                 header="Código"
-                // filter
-                // filterPlaceholder="Procurar por código"
               ></Column>
               <Column
                 field="className"

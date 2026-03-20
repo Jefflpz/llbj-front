@@ -19,8 +19,6 @@ export default function Login() {
       const res = await authService.login({ username, password });
       const accountData = res.data;
       let enriched = { ...accountData };
-      console.log(enriched);
-      // Para professor: buscar perfil para obter a registration
       if (accountData.role === 'TEACHER') {
         try {
           const teachers = await teacherService.findAll();
@@ -55,7 +53,6 @@ export default function Login() {
       </button>
 
       <div className="login-container">
-        {/* Formulário */}
         <div className="login-form-side">
           <div className="login-header">
             <img src="/owl.svg" alt="Logo" className="logo" />
@@ -116,7 +113,6 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Imagem (Hero) */}
         <div className="login-image-side">
           <div className="glass-card">
             <GraduationCap size={40} className="glass-icon" />

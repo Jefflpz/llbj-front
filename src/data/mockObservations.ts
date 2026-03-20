@@ -1,5 +1,3 @@
-// Mocking database tables for Observations
-
 export interface Observation {
     id: number;
     class_id: number;
@@ -14,11 +12,10 @@ export interface ObservationStudent {
     student_id: string;
 }
 
-// Global mutable state to simulate DB
 export let observationsData: Observation[] = [
     {
         id: 1,
-        class_id: 1, // Turma 1
+        class_id: 1,
         teacher_registration: 'PROF-001',
         message: 'Atraso reincidente após o intervalo.',
         type: '3',
@@ -35,12 +32,11 @@ export let observationsData: Observation[] = [
 ];
 
 export let observationStudentData: ObservationStudent[] = [
-    { observation_id: 1, student_id: '1' }, // João
-    { observation_id: 1, student_id: '2' }, // Maria
-    { observation_id: 2, student_id: '1' }, // João
+    { observation_id: 1, student_id: '1' },
+    { observation_id: 1, student_id: '2' },
+    { observation_id: 2, student_id: '1' },
 ];
 
-// Helper to simulate DB functions
 export const addObservationTransaction = (
     class_id: number,
     teacher_registration: string,
@@ -48,9 +44,8 @@ export const addObservationTransaction = (
     type: '1' | '2' | '3',
     student_ids: string[]
 ) => {
-    // 1. Create Observation
     const newObs: Observation = {
-        id: Date.now(), // Fake ID
+        id: Date.now(),
         class_id,
         teacher_registration,
         message,
@@ -60,7 +55,6 @@ export const addObservationTransaction = (
 
     observationsData = [newObs, ...observationsData];
 
-    // 2. Create N:N links
     const newLinks: ObservationStudent[] = student_ids.map(s_id => ({
         observation_id: newObs.id,
         student_id: s_id

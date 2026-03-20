@@ -14,10 +14,14 @@ export interface AccountResponseDTO {
 
 export const accountService = {
   findAll() {
-    return api.get<AccountResponseDTO[]>('/accounts');
+    return api.get<AccountResponseDTO[]>('/accounts').then((r) => r.data);
   },
 
   findById(id: number) {
-    return api.get<AccountResponseDTO>(`/accounts/${id}`);
+    return api.get<AccountResponseDTO>(`/accounts/${id}`).then((r) => r.data);
+  },
+
+  create(data: AccountRequestDTO) {
+    return api.post<AccountResponseDTO>('/accounts', data).then((r) => r.data);
   },
 };

@@ -21,7 +21,7 @@ export function useStudent() {
         const allStudents = res.data;
 
         const found = allStudents.find((s: StudentData) =>
-          s.email.split('@')[0].includes(user.username.split('.')[1]),
+          s.email === user.username
         );
 
         if (found) {

@@ -5,78 +5,121 @@ import { reportService } from '../../services/report.service';
 import WeeklySchedule from '../../components/schedule/WeeklySchedule';
 import ObservationsDrawer from '../../components/observations/ObservationsDrawer';
 import { Sidebar } from '../../components/sidebar/Sidebar';
+import { Breadcrumbs } from '../../components/common/Breadcrumbs';
+import { Download, Bell, Loader2 } from 'lucide-react';
+import '../../styles/AdminTimetable.css';
 import '../../styles/StudentsHome.css';
 
 export default function StudentHome() {
   const [openObs, setOpenObs] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [period, setPeriod] = useState<string>('Manhã');
   const { student, loading } = useStudent();
 
-  const handleDownloadReport = async () => {
-    if (!student) return;
-
+  async function handleDownloadReport() {
+    const studentId = (student as any)?.studentId || (student as any)?.id || (student as any)?.registration;
+    if (!student || !studentId) return;
     setIsDownloading(true);
     try {
-      const [subRes, gradeRes] = await Promise.all([
-        api.get('/subjects'),
-        api.get('/grades'),
-      ]);
+      const res = await api.get(`/grades?studentId=${studentId}`);
+      const allGrades: any[] = res.data;
 
-      const mySubjects = subRes.data.filter(
-        (s: any) => s.classId === ((student as any).classId || (student as any).class_id),
-      );
-      const myGrades = gradeRes.data.filter(
-        (g: any) => g.studentId === ((student as any).studentId || student.id),
+      // Garante que só entram notas do aluno logado
+      const filtered = allGrades.filter(
+        (g: any) => String(g.studentId) === String(studentId),
       );
 
-      reportService.generateBoletim(student, mySubjects, myGrades);
+      // Deduplicação por subjectId: mantém o registro com mais notas preenchidas
+      const bySubject = new Map<number, any>();
+      for (const g of filtered) {
+        const existing = bySubject.get(g.subjectId);
+        if (!existing) {
+          bySubject.set(g.subjectId, g);
+        } else {
+          const existingFilled = [existing.n1, existing.n2, existing.n3].filter(
+            (v) => v != null,
+          ).length;
+          const newFilled = [g.n1, g.n2, g.n3].filter(
+            (v) => v != null,
+          ).length;
+          if (newFilled > existingFilled) bySubject.set(g.subjectId, g);
+        }
+      }
+
+      const grades = Array.from(bySubject.values());
+      reportService.generateBoletim(student, grades);
     } catch (err) {
       console.error('Erro ao gerar boletim:', err);
-      alert('Erro ao gerar PDF. Tente novamente.');
     } finally {
       setIsDownloading(false);
     }
-  };
+  }
 
-  if (loading) return <div className="loading">Carregando...</div>;
 
   return (
-    <div className="student-layout">
+    <div className="timetable-admin-page">
       <Sidebar />
 
-      <main className="student-content">
-        <header className="student-header">
-          <div className="welcome-section">
-            <h1>Sua Semana</h1>
-            <p>
-              Olá, {student?.name?.split(' ')[0]}! Veja o que temos para hoje.
-            </p>
+      <main className="timetable-content">
+        <header className="timetable-header">
+          <div className="timetable-title">
+            <Breadcrumbs items={[
+              { label: 'Início', path: '/students' },
+              { label: 'Aluno' },
+              { label: 'Minha Agenda' }
+            ]} />
+            <div>
+              <h1><strong>Minha Agenda</strong></h1>
+              <p>
+                Olá, {student?.name?.split(' ')[0] || 'Aluno'}! Veja o que temos para hoje.
+              </p>
+            </div>
           </div>
 
-          <div className="header-actions">
+          <div className="header-buttons">
             <button
-              className="download-btn"
+              className="btn-export"
               onClick={handleDownloadReport}
               disabled={isDownloading}
             >
-              <span>{isDownloading ? '⏳' : '📥'}</span>
+              <Download size={18} />
               {isDownloading ? 'Gerando...' : 'Baixar Boletim'}
             </button>
 
-            <button className="icon-btn" onClick={() => setOpenObs(true)}>
-              <span>🔔</span>
-              <span className="badge">!</span>
+            <button className="btn-save" onClick={() => setOpenObs(true)} style={{ position: 'relative' }}>
+              <Bell size={18} />
+              Notificações
+              <span className="badge" style={{ position: 'absolute', top: '-8px', right: '-8px', background: '#ef4444', color: 'white', borderRadius: '50%', padding: '2px 6px', fontSize: '10px' }}>!</span>
             </button>
           </div>
         </header>
 
-        <div className="dashboard-body">
-          <section className="schedule-section">
-            <div className="card">
-              <WeeklySchedule classId={(student as any)?.classId || (student as any)?.class_id} />
+        <section className="filters-row">
+          <div className="select-group">
+            <div className="select-field">
+              <label>Período</label>
+              <select
+                value={period}
+                onChange={(e) => setPeriod(e.target.value)}
+              >
+                <option value="Manhã">Manhã</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noite">Noite</option>
+              </select>
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
+
+        {loading ? (
+          <div className="grid-loading-state" style={{ height: '400px' }}>
+            <Loader2 className="spinner-icon" size={40} />
+            <p>Carregando seus dados...</p>
+          </div>
+        ) : (
+          <div className="dashboard-body">
+            <WeeklySchedule classId={(student as any)?.classId || (student as any)?.class_id} period={period} />
+          </div>
+        )}
 
         <ObservationsDrawer
           open={openObs}

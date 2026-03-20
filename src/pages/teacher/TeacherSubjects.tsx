@@ -7,17 +7,15 @@ import { useAuth } from '../../auth/AuthContext';
 import { useSubjects } from '../../hooks/useSubjects';
 import { useQuizzes, type Quiz, type QuizRequest } from '../../hooks/useQuizzes';
 import { useAgenda } from '../../hooks/useAgenda';
-import '../teacher/TeacherTurmas.css'; // Reusing card styles
+import '../teacher/TeacherTurmas.css';
 import './TeacherSubjects.css';
 
 export default function TeacherSubjects() {
     const { user } = useAuth();
     const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null);
 
-    // Fetch Teacher Subjects
     const { data: subjects, loading: loadingSubjects, error: subjectsError } = useSubjects(undefined, user?.registration);
 
-    // Fetch Details when a Subject is Selected
     const { data: quizzesData, loading: loadingQuizzes, create: createQuiz, update: updateQuiz, remove: removeQuiz } = useQuizzes(selectedSubjectId || 0);
     const { data: agendaData, loading: loadingAgenda } = useAgenda(selectedSubjectId || 0);
 
@@ -40,7 +38,6 @@ export default function TeacherSubjects() {
         setIsModalOpen(true);
     };
 
-    // To be passed to QuizFormModal
     const mockSaveQuiz = async (savedMockQuiz: any) => {
         try {
             const dto: QuizRequest = {
@@ -94,7 +91,6 @@ export default function TeacherSubjects() {
         return agenda ? agenda.weekName : 'Semana Desconhecida';
     };
 
-    // Level 1: Grid View
     const renderGrid = () => {
         if (loadingSubjects) {
             return (
@@ -155,7 +151,6 @@ export default function TeacherSubjects() {
         );
     };
 
-    // Level 2: Detail View
     const renderDetail = () => {
         if (!currentSubject) return null;
 
@@ -164,7 +159,6 @@ export default function TeacherSubjects() {
         return (
             <div className="subject-details-container">
                 <div className="details-content">
-                    {/* Materiais Didáticos Section */}
                     <div className="details-section bg-transparent">
                         <div className="section-header">
                             <div className="section-title-wrapper">
@@ -206,7 +200,6 @@ export default function TeacherSubjects() {
                         )}
                     </div>
 
-                    {/* Quizzes Section */}
                     <div className="details-section bg-transparent mt-8">
                         <div className="section-header">
                             <div className="section-title-wrapper">

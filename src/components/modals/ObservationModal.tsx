@@ -36,11 +36,8 @@ export function ObservationModal({
     const [observationText, setObservationText] = useState('');
     const [showError, setShowError] = useState(false);
 
-    // Determines if the "turma" group chip should be shown instead of individual chips.
-    // It is shown when ALL students are selected.
     const isAllSelected = selectedStudentIds.length === studentsInClass.length && studentsInClass.length > 0;
 
-    // Reset state when modal opens
     useEffect(() => {
         if (isOpen) {
             setObservationType('');
@@ -89,7 +86,6 @@ export function ObservationModal({
 
                 <form onSubmit={handleSubmit} className="observation-form">
 
-                    {/* Recipients Section (Email style) */}
                     <div className="form-group recipients-group">
                         <label>Para:</label>
                         <div className="recipients-input-area">
