@@ -290,9 +290,8 @@ button {
     font-size: 14px;
     border-radius: 8px;
     background: #F8FAFC;
-    border: 1px solid #60666e;
+    color: #0F172A;
     gap: 1rem;
-    height: 2rem;
 }
 
 .modal-fields {
@@ -300,3 +299,297 @@ button {
     flex-direction: column;
     gap: 1.2rem;
 }
+
+/* Success Modal Styles (matching Quiz completion) */
+.success-modal-content {
+    text-align: center;
+    padding: 1rem;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.success-modal-icon {
+    color: #10b981;
+    margin: 0 auto 1.5rem auto;
+    animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.success-modal-title {
+    font-size: 1.75rem;
+    color: #0f172a;
+    margin-bottom: 0.75rem;
+    font-weight: 800;
+}
+
+.success-modal-text {
+    color: #64748b;
+    margin-bottom: 2rem;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-success-finish {
+    padding: 0.75rem 2rem;
+    background: linear-gradient(to right, #0ea5e9, #2563eb);
+    color: white;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-success-finish:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 20px -3px rgba(14, 165, 233, 0.4);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); opacity: 1; }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+/* Delete Confirmation Modal Styles */
+.delete-modal-content {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.delete-modal-icon-container {
+    background-color: #fef2f2;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem auto;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+}
+
+.delete-modal-title {
+    font-size: 1.5rem;
+    color: #0f172a;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.delete-modal-text {
+    color: #64748b;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.delete-modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn-delete-confirm {
+    padding: 0.75rem 2rem;
+    background: linear-gradient(to right, #ef4444, #dc2626);
+    color: white;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+    transition: all 0.2s ease;
+}
+
+.btn-delete-confirm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
+}
+
+.btn-delete-cancel {
+    padding: 0.75rem 2rem;
+    background-color: #f8fafc;
+    color: #64748b;
+    border-radius: 30px;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.btn-delete-cancel:hover {
+    background-color: #f1f5f9;
+    color: #334155;
+}
+
+/* Custom Dialog Fixes */
+.custom-modal-mask {
+    background-color: rgba(15, 23, 42, 0.4) !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+.custom-confirm-dialog,
+.custom-success-dialog {
+    border: none !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    border-radius: 1.5rem !important;
+    overflow: hidden;
+}
+
+.custom-confirm-dialog .p-dialog-content,
+.custom-success-dialog .p-dialog-content {
+    padding: 2rem !important;
+    background: #ffffff !important;
+    border-radius: 1.5rem !important;
+}
+
+.custom-confirm-dialog .p-dialog-header,
+.custom-success-dialog .p-dialog-header {
+    display: none !important;
+}
+
+/* Premium Form Styles (matching Quiz/Observation modals) */
+.custom-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.75rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.custom-modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.custom-form-body {
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.custom-form-row {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr 1fr;
+}
+
+.custom-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.custom-form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.custom-form-group input,
+.custom-form-group select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    font-size: 0.95rem;
+    color: #1e293b;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.custom-form-group input:focus,
+.custom-form-group select:focus {
+    background-color: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.custom-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.25rem 1.75rem;
+    border-top: 1px solid #f1f5f9;
+    background: #ffffff;
+}
+
+.btn-modal-cancel {
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-modal-cancel:hover {
+    background-color: #f8fafc;
+    color: #1e293b;
+}
+
+.btn-modal-save {
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    transition: all 0.2s;
+}
+
+.btn-modal-save:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
+
+.btn-modal-close {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-modal-close:hover {
+    background-color: #f1f5f9;
+    color: #334155;
+}
+
+@media (max-width: 640px) {
+    .custom-form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
