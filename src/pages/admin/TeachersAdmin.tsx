@@ -1,16 +1,23 @@
 import { Sidebar } from '../../components/sidebar/Sidebar';
 import '../../styles/Admin.css';
 import { Breadcrumbs } from '../../components/common/Breadcrumbs';
-import { CirclePlus, Pencil, Trash2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { CirclePlus, Pencil, Trash2, CheckCircle2, AlertTriangle, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Toast } from 'primereact/toast';
+import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { teacherService } from '../../services/teacher.service';
 import '../../styles/Admin.css';
+import { accountService } from '../../services/account.service';
+import { subjectsService } from '../../services/subjects.service';
+import { observationService } from '../../services/observations.service';
+import { gradesService } from '../../services/grades.service';
+import { agendaService } from '../../services/agenda.service';
+import { quizzesService } from '../../services/quizzes.service';
 import { FilterMatchMode } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
 import type { DataTableFilterMeta } from 'primereact/datatable';
-import { Dialog } from 'primereact/dialog';
 
 interface Teacher {
   urlImage: string;
@@ -25,17 +32,45 @@ interface Teacher {
 export default function TeachersAdmin() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [visible, setVisible] = useState(false);
-  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(
-    null,
-  );
+  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
+  const [deleteVisible, setDeleteVisible] = useState(false);
+  const [teacherToDelete, setTeacherToDelete] = useState<Teacher | null>(null);
+  const [confirmName, setConfirmName] = useState('');
+  const [successData, setSuccessData] = useState({ title: '', message: '' });
+  const toast = useRef<Toast>(null);
 
   useEffect(() => {
     loadTeachers();
   }, []);
 
   const loadTeachers = async () => {
-    const response = await teacherService.findAll();
-    setTeachers(response as any);
+    try {
+      const [teacherList, accountList] = await Promise.all([
+        teacherService.findAll(),
+        accountService.findAll(),
+      ]);
+
+      const enrichedTeachers: Teacher[] = teacherList.map((teacher: any) => {
+        const account = accountList.find((a: any) => a.username === teacher.email);
+        return {
+          ...teacher,
+          accountId: account ? account.id : 0,
+        };
+      });
+
+      setTeachers(enrichedTeachers);
+    } catch (error) {
+      console.warn('Falha ao enriquecer professores com contas:', error);
+      const teacherList = await teacherService.findAll();
+      setTeachers(
+        (teacherList as any[]).map((t: any) => ({
+          ...t,
+          accountId: (t as any).accountId || 0,
+        })) as Teacher[],
+      );
+    }
   };
 
   const [filters, setFilters] = useState<DataTableFilterMeta>({
@@ -78,10 +113,82 @@ export default function TeachersAdmin() {
     setVisible(true);
   };
 
-  const handleDelete = async (accountId: number) => {
-    if (window.confirm('Tem certeza que deseja excluir?')) {
-      await teacherService.delete(accountId.toString());
+  const handleDelete = (rowData: Teacher) => {
+    setTeacherToDelete(rowData);
+    setConfirmName('');
+    setDeleteVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!teacherToDelete) return;
+    setDeleteVisible(false);
+
+    try {
+      // 1. Delete associated observations
+      const obs = await observationService.findAll();
+      const teacherObs = obs.filter(
+        (o) => o.teacherRegistration === teacherToDelete.registration,
+      );
+      for (const o of teacherObs) {
+        await observationService.delete(o.id);
+      }
+
+      // 2. Delete associated subjects and their dependencies
+      const subjects = await subjectsService.findByTeacher(
+        teacherToDelete.registration,
+      );
+      for (const s of subjects) {
+        // 2.1 Delete grades
+        const grades = await gradesService.findBySubject(s.id);
+        for (const g of grades) {
+          await gradesService.delete(g.studentId, s.id);
+        }
+
+        // 2.2 Delete quizzes
+        const quizzes = await quizzesService.findBySubject(s.id);
+        for (const q of quizzes) {
+          await quizzesService.delete(q.id);
+        }
+
+        // 2.3 Delete agendas and materials
+        const agendas = await agendaService.findAgendas(s.id);
+        for (const a of agendas) {
+          const materials = await agendaService.findMaterials(a.id);
+          for (const m of materials) {
+            await agendaService.deleteMaterial(m.id);
+          }
+          await agendaService.deleteAgenda(a.id);
+        }
+
+        // 2.4 Finally delete the subject
+        await subjectsService.delete(s.id);
+      }
+
+      // 3. Delete the teacher
+      await teacherService.delete(teacherToDelete.registration);
+
+      // 4. Delete the account
+      if (teacherToDelete.accountId && teacherToDelete.accountId !== 0) {
+        await accountService.delete(teacherToDelete.accountId);
+      }
+
+      setSuccessData({
+        title: 'Excluído!',
+        message: 'O professor e todos os dados associados foram removidos com sucesso.',
+      });
+      setSuccessVisible(true);
       loadTeachers();
+    } catch (error: any) {
+      console.error('Erro ao excluir professor:', error);
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Erro',
+        detail: `Erro ao excluir professor: ${error.response?.data?.message || error.message}`,
+        life: 5000,
+      });
+    } finally {
+      setTeacherToDelete(null);
+      setConfirmName('');
     }
   };
 
@@ -90,12 +197,100 @@ export default function TeachersAdmin() {
     setVisible(true);
   };
 
+  const handleSave = async () => {
+    if (!selectedTeacher) return;
+
+    try {
+      if (isEditing) {
+        let accountId = selectedTeacher.accountId;
+
+        if (!accountId || accountId === 0) {
+          try {
+            const accounts = await accountService.findAll();
+            const account = accounts.find((a) => a.username === selectedTeacher.email);
+            if (account) {
+              accountId = account.id;
+            } else {
+              const newAcc = await accountService.create({
+                username: selectedTeacher.email,
+                password: '123456',
+                role: 'TEACHER',
+              });
+              accountId = newAcc.id;
+            }
+          } catch (e) {
+            console.error('Erro ao recuperar/criar conta para o professor:', e);
+          }
+        }
+
+        await teacherService.update(selectedTeacher.registration, {
+          ...selectedTeacher,
+          accountId: accountId || 0,
+        } as any);
+      } else {
+        // 1. Generate registration
+        const allTeachers = await teacherService.findAll();
+        let nextReg = 'PROF-001';
+
+        if (allTeachers.length > 0) {
+          const registrations = (allTeachers as any[])
+            .map((t: any) => t.registration as string)
+            .filter((r: string) => r.startsWith('PROF-'));
+
+          if (registrations.length > 0) {
+            const maxNum = Math.max(
+              ...registrations.map((r: string) => {
+                const num = parseInt(r.replace('PROF-', ''), 10);
+                return isNaN(num) ? 0 : num;
+              }),
+            );
+            nextReg = `PROF-${String(maxNum + 1).padStart(3, '0')}`;
+          }
+        }
+
+        // 2. Create account
+        const account = await accountService.create({
+          username: selectedTeacher.email,
+          password: '123456',
+          role: 'TEACHER',
+        });
+
+        // 3. Create teacher
+        await teacherService.create({
+          ...selectedTeacher,
+          registration: nextReg,
+          accountId: account.id,
+        } as any);
+      }
+
+      setSuccessData({
+        title: isEditing ? 'Alterado!' : 'Cadastrado!',
+        message: `O professor foi ${isEditing ? 'alterado' : 'cadastrado'} com sucesso no sistema.`,
+      });
+      setSuccessVisible(true);
+      setVisible(false);
+      setSelectedTeacher(null);
+      loadTeachers();
+    } catch (error: any) {
+      console.error('Erro ao salvar professor:', error);
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Erro',
+        detail: `Erro ao salvar professor: ${error.response?.data?.message || error.message}`,
+        life: 5000,
+      });
+    }
+  };
+
   const actions = (rowData: Teacher) => (
     <div className="actions-column">
       <button className="btn-edit" onClick={() => handleEdit(rowData)}>
         <Pencil size={18} />
       </button>
-      <button className="btn-delete" onClick={() => handleDelete(rowData.accountId)}>
+      <button
+        className="btn-delete"
+        onClick={() => handleDelete(rowData)}
+      >
         <Trash2 size={18} />
       </button>
     </div>
@@ -103,6 +298,93 @@ export default function TeachersAdmin() {
 
   return (
     <div className="timetable-admin-page">
+      <Toast ref={toast} />
+
+      <Dialog
+        visible={deleteVisible}
+        onHide={() => {
+          setDeleteVisible(false);
+          setConfirmName('');
+        }}
+        closable={false}
+        showHeader={false}
+        maskClassName="custom-modal-mask"
+        className="custom-confirm-dialog"
+        style={{ width: '500px' }}
+      >
+        <div className="delete-modal-content">
+          <div className="delete-modal-icon-container">
+            <AlertTriangle size={32} />
+          </div>
+          <h3 className="delete-modal-title">Confirmar Exclusão</h3>
+          <div className="delete-modal-text">
+            <p>
+              Tem certeza que deseja excluir o professor{' '}
+              <strong>{teacherToDelete?.name}</strong>?
+            </p>
+            <p style={{ fontSize: '0.85rem', marginTop: '0.75rem', color: '#64748b' }}>
+              Esta ação removerá todos os dados permanentemente.
+              <br />
+              Digite o nome do professor para confirmar:
+            </p>
+          </div>
+
+          <div className="custom-form-group" style={{ marginBottom: '1.5rem', marginTop: '1rem' }}>
+            <InputText
+              value={confirmName}
+              onChange={(e) => setConfirmName(e.target.value)}
+              placeholder={teacherToDelete?.name}
+              style={{ textAlign: 'center', fontWeight: 'bold' }}
+            />
+          </div>
+
+          <div className="delete-modal-actions">
+            <button
+              onClick={() => {
+                setDeleteVisible(false);
+                setConfirmName('');
+              }}
+              className="btn-delete-cancel"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={confirmDelete}
+              className="btn-delete-confirm"
+              disabled={confirmName !== teacherToDelete?.name}
+              style={{
+                opacity: confirmName === teacherToDelete?.name ? 1 : 0.5,
+                cursor: confirmName === teacherToDelete?.name ? 'pointer' : 'not-allowed'
+              }}
+            >
+              Sim, Excluir
+            </button>
+          </div>
+        </div>
+      </Dialog>
+
+      <Dialog
+        visible={successVisible}
+        onHide={() => setSuccessVisible(false)}
+        closable={false}
+        showHeader={false}
+        maskClassName="custom-modal-mask"
+        className="custom-success-dialog"
+        style={{ width: '400px' }}
+      >
+        <div className="success-modal-content">
+          <CheckCircle2 size={80} className="success-modal-icon" />
+          <h3 className="success-modal-title">{successData.title}</h3>
+          <p className="success-modal-text">{successData.message}</p>
+          <button
+            onClick={() => setSuccessVisible(false)}
+            className="btn-success-finish"
+          >
+            Entendido
+          </button>
+        </div>
+      </Dialog>
+
       <Sidebar />
       <main className="timetable-content">
         <header className="timetable-header">
@@ -213,108 +495,118 @@ export default function TeachersAdmin() {
       </main>
 
       <Dialog
-        header={
-          !selectedTeacher?.accountId ? 'Criar Professor' : 'Editar Professor'
-        }
         visible={visible}
-        dismissableMask
-        className="modal"
         onHide={() => {
           setVisible(false);
           setSelectedTeacher(null);
         }}
+        showHeader={false}
+        maskClassName="custom-modal-mask"
+        className="custom-confirm-dialog"
+        style={{ width: '600px' }}
       >
         {selectedTeacher && (
-          <div className="modal-fields">
-            <div className="field">
-              <label>Foto</label>
-              <InputText
-                value={selectedTeacher.urlImage}
-                className="input-modal"
-                onChange={(e) =>
-                  setSelectedTeacher({
-                    ...selectedTeacher,
-                    urlImage: e.target.value,
-                  })
-                }
-              />
+          <>
+            <div className="custom-modal-header">
+              <h2>{isEditing ? 'Editar Professor' : 'Criar Novo Professor'}</h2>
+              <button
+                className="btn-modal-close"
+                onClick={() => setVisible(false)}
+              >
+                <X size={20} />
+              </button>
             </div>
 
-            <div className="field">
-              <label>Nome</label>
-              <InputText
-                value={selectedTeacher.name}
-                className="input-modal"
-                onChange={(e) =>
-                  setSelectedTeacher({
-                    ...selectedTeacher,
-                    name: e.target.value,
-                  })
-                }
-              />
+            <div className="custom-form-body">
+              <div className="custom-form-row">
+                <div className="custom-form-group">
+                  <label>Nome Completo</label>
+                  <InputText
+                    value={selectedTeacher.name}
+                    onChange={(e) =>
+                      setSelectedTeacher({
+                        ...selectedTeacher,
+                        name: e.target.value,
+                      })
+                    }
+                    placeholder="Ex: João Silva"
+                  />
+                </div>
+
+                <div className="custom-form-group">
+                  <label>E-mail Institucional</label>
+                  <InputText
+                    value={selectedTeacher.email}
+                    onChange={(e) =>
+                      setSelectedTeacher({
+                        ...selectedTeacher,
+                        email: e.target.value,
+                      })
+                    }
+                    placeholder="joao.silva@escola.com"
+                  />
+                </div>
+              </div>
+
+              <div className="custom-form-row">
+                <div className="custom-form-group">
+                  <label>Disciplina</label>
+                  <InputText
+                    value={selectedTeacher.subject}
+                    onChange={(e) =>
+                      setSelectedTeacher({
+                        ...selectedTeacher,
+                        subject: e.target.value,
+                      })
+                    }
+                    placeholder="Ex: Matemática"
+                  />
+                </div>
+
+                <div className="custom-form-group">
+                  <label>Status do Cadastro</label>
+                  <select
+                    value={selectedTeacher.status}
+                    onChange={(e) =>
+                      setSelectedTeacher({
+                        ...selectedTeacher,
+                        status: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="custom-form-group">
+                <label>Foto de Perfil (URL)</label>
+                <InputText
+                  value={selectedTeacher.urlImage === null ? '' : selectedTeacher.urlImage}
+                  placeholder="https://exemplo.com/foto.jpg"
+                  onChange={(e) =>
+                    setSelectedTeacher({
+                      ...selectedTeacher,
+                      urlImage: e.target.value,
+                    })
+                  }
+                />
+              </div>
             </div>
 
-            <div className="field">
-              <label>E-mail</label>
-              <InputText
-                value={selectedTeacher.email}
-                className="input-modal"
-                onChange={(e) =>
-                  setSelectedTeacher({
-                    ...selectedTeacher,
-                    email: e.target.value,
-                  })
-                }
-              />
+            <div className="custom-modal-footer">
+              <button
+                className="btn-modal-cancel"
+                onClick={() => setVisible(false)}
+              >
+                Cancelar
+              </button>
+              <button className="btn-modal-save" onClick={handleSave}>
+                {isEditing ? 'Salvar Alterações' : 'Cadastrar Professor'}
+              </button>
             </div>
-
-            <div className="field">
-              <label>Disciplina</label>
-              <InputText
-                value={selectedTeacher.subject}
-                className="input-modal"
-                onChange={(e) =>
-                  setSelectedTeacher({
-                    ...selectedTeacher,
-                    subject: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div className="field">
-              <label>Status</label>
-              <InputText
-                value={selectedTeacher.status}
-                className="input-modal"
-                onChange={(e) =>
-                  setSelectedTeacher({
-                    ...selectedTeacher,
-                    status: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <button
-              className="btn-save"
-              onClick={async () => {
-                if (!selectedTeacher?.accountId) {
-                  await teacherService.create(selectedTeacher);
-                } else {
-                  await teacherService.update(
-                    selectedTeacher?.accountId.toString(),
-                    selectedTeacher,
-                  );
-                }
-                alert('Disciplina salva com sucesso!');
-                setVisible(false);
-                loadTeachers();
-              }}
-            >
-              Salvar
-            </button>
-          </div>
+          </>
         )}
       </Dialog>
     </div>

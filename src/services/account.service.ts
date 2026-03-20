@@ -20,4 +20,8 @@ export const accountService = {
   findById(id: number) {
     return api.get<AccountResponseDTO>(`/accounts/${id}`);
   },
+
+  delete(id: number) {
+    return api.delete(`/accounts/${id}`).then(() => undefined);
+  },
 };
