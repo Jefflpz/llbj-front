@@ -436,6 +436,11 @@ button {
 }
 
 /* Custom Dialog Fixes */
+.custom-modal-mask {
+    background-color: rgba(15, 23, 42, 0.4) !important;
+    backdrop-filter: blur(4px) !important;
+}
+
 .custom-confirm-dialog,
 .custom-success-dialog {
     border: none !important;

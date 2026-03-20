@@ -1,7 +1,7 @@
 import { Sidebar } from '../../components/sidebar/Sidebar';
 import '../../styles/Admin.css';
 import { Breadcrumbs } from '../../components/common/Breadcrumbs';
-import { CirclePlus, Pencil, Trash2, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { CirclePlus, Pencil, Trash2, CheckCircle2, AlertTriangle, X } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
@@ -36,6 +36,7 @@ export default function TeachersAdmin() {
   const [successVisible, setSuccessVisible] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [teacherToDelete, setTeacherToDelete] = useState<Teacher | null>(null);
+  const [confirmName, setConfirmName] = useState('');
   const [successData, setSuccessData] = useState({ title: '', message: '' });
   const toast = useRef<Toast>(null);
 
@@ -114,6 +115,7 @@ export default function TeachersAdmin() {
 
   const handleDelete = (rowData: Teacher) => {
     setTeacherToDelete(rowData);
+    setConfirmName('');
     setDeleteVisible(true);
   };
 
@@ -186,6 +188,7 @@ export default function TeachersAdmin() {
       });
     } finally {
       setTeacherToDelete(null);
+      setConfirmName('');
     }
   };
 
@@ -300,32 +303,61 @@ export default function TeachersAdmin() {
 
       <Dialog
         visible={deleteVisible}
-        onHide={() => setDeleteVisible(false)}
+        onHide={() => {
+          setDeleteVisible(false);
+          setConfirmName('');
+        }}
         closable={false}
         showHeader={false}
+        maskClassName="custom-modal-mask"
         className="custom-confirm-dialog"
-        style={{ width: '450px' }}
+        style={{ width: '500px' }}
       >
         <div className="delete-modal-content">
           <div className="delete-modal-icon-container">
             <AlertTriangle size={32} />
           </div>
           <h3 className="delete-modal-title">Confirmar Exclusão</h3>
-          <p className="delete-modal-text">
-            Tem certeza que deseja excluir o professor{' '}
-            <strong>{teacherToDelete?.name}</strong>?
-            <br />
-            Esta ação é irreversível e removerá todas as disciplinas e notas
-            vinculadas.
-          </p>
+          <div className="delete-modal-text">
+            <p>
+              Tem certeza que deseja excluir o professor{' '}
+              <strong>{teacherToDelete?.name}</strong>?
+            </p>
+            <p style={{ fontSize: '0.85rem', marginTop: '0.75rem', color: '#64748b' }}>
+              Esta ação removerá todos os dados permanentemente.
+              <br />
+              Digite o nome do professor para confirmar:
+            </p>
+          </div>
+
+          <div className="custom-form-group" style={{ marginBottom: '1.5rem', marginTop: '1rem' }}>
+            <InputText
+              value={confirmName}
+              onChange={(e) => setConfirmName(e.target.value)}
+              placeholder={teacherToDelete?.name}
+              style={{ textAlign: 'center', fontWeight: 'bold' }}
+            />
+          </div>
+
           <div className="delete-modal-actions">
             <button
-              onClick={() => setDeleteVisible(false)}
+              onClick={() => {
+                setDeleteVisible(false);
+                setConfirmName('');
+              }}
               className="btn-delete-cancel"
             >
               Cancelar
             </button>
-            <button onClick={confirmDelete} className="btn-delete-confirm">
+            <button
+              onClick={confirmDelete}
+              className="btn-delete-confirm"
+              disabled={confirmName !== teacherToDelete?.name}
+              style={{
+                opacity: confirmName === teacherToDelete?.name ? 1 : 0.5,
+                cursor: confirmName === teacherToDelete?.name ? 'pointer' : 'not-allowed'
+              }}
+            >
               Sim, Excluir
             </button>
           </div>
@@ -337,6 +369,7 @@ export default function TeachersAdmin() {
         onHide={() => setSuccessVisible(false)}
         closable={false}
         showHeader={false}
+        maskClassName="custom-modal-mask"
         className="custom-success-dialog"
         style={{ width: '400px' }}
       >
@@ -463,95 +496,118 @@ export default function TeachersAdmin() {
       </main>
 
       <Dialog
-        header={isEditing ? 'Editar Professor' : 'Criar Professor'}
         visible={visible}
-        dismissableMask
-        className="modal"
         onHide={() => {
           setVisible(false);
           setSelectedTeacher(null);
         }}
+        showHeader={false}
+        maskClassName="custom-modal-mask"
+        className="custom-confirm-dialog"
+        style={{ width: '600px' }}
       >
         {selectedTeacher && (
-          <div className="modal-fields">
-            <div className="field">
-              <label>Nome</label>
-              <InputText
-                value={selectedTeacher.name}
-                className="input-modal"
-                onChange={(e) =>
-                  setSelectedTeacher({
-                    ...selectedTeacher,
-                    name: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div className="field">
-              <label>E-mail</label>
-              <InputText
-                value={selectedTeacher.email}
-                className="input-modal"
-                onChange={(e) =>
-                  setSelectedTeacher({
-                    ...selectedTeacher,
-                    email: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div className="field">
-              <label>Disciplina</label>
-              <InputText
-                value={selectedTeacher.subject}
-                className="input-modal"
-                onChange={(e) =>
-                  setSelectedTeacher({
-                    ...selectedTeacher,
-                    subject: e.target.value,
-                  })
-                }
-              />
-            </div>
-
-            <div className="field">
-              <label>Status</label>
-              <select
-                value={selectedTeacher.status}
-                className="input-modal"
-                onChange={(e) =>
-                  setSelectedTeacher({
-                    ...selectedTeacher,
-                    status: e.target.value,
-                  })
-                }
+          <>
+            <div className="custom-modal-header">
+              <h2>{isEditing ? 'Editar Professor' : 'Criar Novo Professor'}</h2>
+              <button
+                className="btn-modal-close"
+                onClick={() => setVisible(false)}
               >
-                <option value="Ativo">Ativo</option>
-                <option value="Inativo">Inativo</option>
-              </select>
+                <X size={20} />
+              </button>
             </div>
 
-            <div className="field">
-              <label>Foto (URL)</label>
-              <InputText
-                value={selectedTeacher.urlImage}
-                className="input-modal"
-                placeholder="https://..."
-                onChange={(e) =>
-                  setSelectedTeacher({
-                    ...selectedTeacher,
-                    urlImage: e.target.value,
-                  })
-                }
-              />
+            <div className="custom-form-body">
+              <div className="custom-form-row">
+                <div className="custom-form-group">
+                  <label>Nome Completo</label>
+                  <InputText
+                    value={selectedTeacher.name}
+                    onChange={(e) =>
+                      setSelectedTeacher({
+                        ...selectedTeacher,
+                        name: e.target.value,
+                      })
+                    }
+                    placeholder="Ex: João Silva"
+                  />
+                </div>
+
+                <div className="custom-form-group">
+                  <label>E-mail Institucional</label>
+                  <InputText
+                    value={selectedTeacher.email}
+                    onChange={(e) =>
+                      setSelectedTeacher({
+                        ...selectedTeacher,
+                        email: e.target.value,
+                      })
+                    }
+                    placeholder="joao.silva@escola.com"
+                  />
+                </div>
+              </div>
+
+              <div className="custom-form-row">
+                <div className="custom-form-group">
+                  <label>Disciplina</label>
+                  <InputText
+                    value={selectedTeacher.subject}
+                    onChange={(e) =>
+                      setSelectedTeacher({
+                        ...selectedTeacher,
+                        subject: e.target.value,
+                      })
+                    }
+                    placeholder="Ex: Matemática"
+                  />
+                </div>
+
+                <div className="custom-form-group">
+                  <label>Status do Cadastro</label>
+                  <select
+                    value={selectedTeacher.status}
+                    onChange={(e) =>
+                      setSelectedTeacher({
+                        ...selectedTeacher,
+                        status: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="custom-form-group">
+                <label>Foto de Perfil (URL)</label>
+                <InputText
+                  value={selectedTeacher.urlImage === null ? '' : selectedTeacher.urlImage}
+                  placeholder="https://exemplo.com/foto.jpg"
+                  onChange={(e) =>
+                    setSelectedTeacher({
+                      ...selectedTeacher,
+                      urlImage: e.target.value,
+                    })
+                  }
+                />
+              </div>
             </div>
 
-            <button className="btn-save" onClick={handleSave}>
-              Salvar
-            </button>
-          </div>
+            <div className="custom-modal-footer">
+              <button
+                className="btn-modal-cancel"
+                onClick={() => setVisible(false)}
+              >
+                Cancelar
+              </button>
+              <button className="btn-modal-save" onClick={handleSave}>
+                {isEditing ? 'Salvar Alterações' : 'Cadastrar Professor'}
+              </button>
+            </div>
+          </>
         )}
       </Dialog>
     </div>
