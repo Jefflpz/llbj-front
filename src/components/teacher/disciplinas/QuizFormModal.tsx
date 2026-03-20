@@ -4,9 +4,9 @@ import type { Quiz } from '../../../hooks/useQuizzes';
 import { useAuth } from '../../../auth/AuthContext';
 import { useSubjects } from '../../../hooks/useSubjects';
 import { useAgenda } from '../../../hooks/useAgenda';
-import { timetableService } from '../../../services/timetable.service';
 import './QuizFormModal.css';
 
+// Reusing same interface logic from old mock, adapted to the API
 export interface QuizQuestion {
     id?: string;
     title?: string;
@@ -35,37 +35,20 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
     const [releaseDate, setReleaseDate] = useState('');
     const [deadline, setDeadline] = useState('');
 
+    // Associations
     const [subjectId, setSubjectId] = useState<number | ''>('');
     const [weekId, setWeekId] = useState<number | ''>('');
     const [materialId, setMaterialId] = useState<number | ''>('');
-    const [selectedDay, setSelectedDay] = useState<string>('');
-    const [availableDays, setAvailableDays] = useState<string[]>([]);
 
+    // Questions State
     const [questions, setQuestions] = useState<QuizQuestion[]>([]);
 
+    // API Hooks
     const { data: subjects = [] } = useSubjects(undefined, user?.registration);
     const { data: agendaData } = useAgenda(Number(subjectId) || 0);
 
     const availableAgendas = subjectId ? (agendaData?.agendas || []) : [];
     const availableMaterials = subjectId ? (agendaData?.materials || []) : [];
-
-    useEffect(() => {
-        if (subjectId) {
-            const selectedSubject = (subjects || []).find(s => s.id === subjectId);
-            if (selectedSubject && selectedSubject.classId) {
-                timetableService.getTimetable(selectedSubject.classId, 'Manhã')
-                    .then(items => {
-                        const subjectItems = items.filter(item => item.subject_id === Number(subjectId));
-                        const uniqueDays = Array.from(new Set(subjectItems.map(item => item.day_of_week)));
-                        setAvailableDays(uniqueDays);
-                    });
-            } else {
-                setAvailableDays([]);
-            }
-        } else {
-            setAvailableDays([]);
-        }
-    }, [subjectId, subjects]);
 
     useEffect(() => {
         if (quizToEdit) {
@@ -78,6 +61,7 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
             setWeekId(quizToEdit.weekId || '');
             setMaterialId(quizToEdit.materialId || '');
 
+            // Map the questions back to the form format
             setQuestions(quizToEdit.questions.map((q: any) => ({
                 text: q.text || q.title || '',
                 options: (q.options || []).map((o: any) => ({
@@ -97,11 +81,11 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
         setTitle('');
         setDescription('');
         setScore(10);
+        setReleaseDate('');
         setDeadline('');
         setSubjectId('');
         setWeekId('');
         setMaterialId('');
-        setSelectedDay('');
         setQuestions([]);
     };
 
@@ -153,7 +137,9 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
 
     const handleMarkCorrect = (qIndex: number, oIndex: number) => {
         const updated = [...questions];
+        // reset all to false
         updated[qIndex].options.forEach(opt => opt.isCorrect = false);
+        // set selected to true
         updated[qIndex].options[oIndex].isCorrect = true;
         setQuestions(updated);
     };
@@ -177,10 +163,10 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
             weekId: weekId === '' ? null : Number(weekId),
             materialId: materialId === '' ? null : Number(materialId),
             questions: questions.map((q: any) => ({
-                title: q.text || q.title,
+                text: q.text || q.title,
                 options: q.options.map((o: any) => ({
                     text: o.text,
-                    isCorrect: !!o.isCorrect || !!o.correct
+                    correct: !!o.isCorrect
                 }))
             })),
         };
@@ -234,15 +220,12 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
                         />
                     </div>
 
-                    <div className="form-row form-row-2">
+                    <div className="form-row form-row-3">
                         <div className="form-group">
                             <label>Turma / Disciplina Alvo</label>
                             <select
                                 value={subjectId}
-                                onChange={e => {
-                                    setSubjectId(e.target.value === '' ? '' : Number(e.target.value));
-                                    setSelectedDay('');
-                                }}
+                                onChange={e => setSubjectId(e.target.value === '' ? '' : Number(e.target.value))}
                                 disabled={!!preSelectedSubjectId}
                             >
                                 <option value="">-- Selecione a disciplina --</option>
@@ -252,23 +235,7 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
                             </select>
                         </div>
                         <div className="form-group">
-                            <label>Dia da Aplicação (Agenda Mapeada)</label>
-                            <select
-                                value={selectedDay}
-                                onChange={e => setSelectedDay(e.target.value)}
-                                disabled={!subjectId || availableDays.length === 0}
-                            >
-                                <option value="">{availableDays.length === 0 ? "-- Nenhum dia na grade --" : "-- Selecione o dia da aula --"}</option>
-                                {availableDays.map(day => (
-                                    <option key={day} value={day}>{day}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="form-row form-row-2">
-                        <div className="form-group">
-                            <label>Vincular à Semana Base</label>
+                            <label>Vincular à Agenda</label>
                             <select value={weekId} onChange={e => setWeekId(e.target.value === '' ? '' : Number(e.target.value))} disabled={!subjectId}>
                                 <option value="">-- Nenhuma Semana --</option>
                                 {availableAgendas.map(w => (

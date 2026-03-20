@@ -12,6 +12,10 @@ export interface TeacherProfile {
     status: 'Ativo' | 'Inativo';
 }
 
+/**
+ * Hook para obter os dados do professor atualmente logado.
+ * Usa o username do contexto de auth para encontrar o professor correspondente.
+ */
 export function useTeacher() {
     const { user } = useAuth();
 
@@ -19,6 +23,7 @@ export function useTeacher() {
         () => async (): Promise<TeacherProfile | null> => {
             if (!user || user.role !== 'TEACHER') return null;
             const all = await teacherService.findAll();
+            // Encontra pelo username que corresponde à matrícula ou email
             const found = all.find(
                 (t) =>
                     t.registration.toLowerCase() === user.username.toLowerCase() ||

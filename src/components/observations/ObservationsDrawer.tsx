@@ -52,7 +52,7 @@ export default function ObservationsDrawer({
 
         <header className="drawer-header">
           <h1>Minhas Observações</h1>
-          <p className="current-date">Segunda-Feira, 16 de Março, 2026</p>
+          <p className="current-date">Sábado, 21 de Fevereiro, 2026</p>
         </header>
 
         <div className="timeline-container">

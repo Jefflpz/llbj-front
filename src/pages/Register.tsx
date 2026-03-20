@@ -13,6 +13,7 @@ export default function Register() {
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
+        // Simular registro com sucesso e voltar para login
         alert('Cadastro validado com sucesso!');
         navigate('/login');
     };
@@ -24,6 +25,7 @@ export default function Register() {
             </button>
 
             <div className="login-container">
+                {/* Formulário */}
                 <div className="login-form-side">
                     <div className="login-header">
                         <img src="/owl.svg" alt="Logo" className="logo" />
@@ -108,6 +110,7 @@ export default function Register() {
                     </form>
                 </div>
 
+                {/* Imagem (Hero) */}
                 <div className="login-image-side">
                     <div className="glass-card">
                         <GraduationCap size={40} className="glass-icon" />

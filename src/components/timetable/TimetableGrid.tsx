@@ -12,6 +12,7 @@ interface TimetableGridProps {
 export const TimetableGrid: React.FC<TimetableGridProps> = ({ slots, items, subjects, onRemoveItem }) => {
     const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
 
+    // Identify unique timeslots combinations (row headers)
     const uniqueTimes = Array.from(
         new Map(
             slots.map((s) => [`${s.start_time}-${s.end_time}`, { start: s.start_time, end: s.end_time, isBreak: s.is_break }])
@@ -21,13 +22,15 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({ slots, items, subj
     return (
         <div className="timetable-grid-container">
             <div className="timetable-grid">
-                <div></div>
+                {/* Header Row */}
+                <div></div> {/* Corner */}
                 {days.map((day) => (
                     <div key={day} className="grid-header">
                         {day}
                     </div>
                 ))}
 
+                {/* Rows loop based on Time */}
                 {uniqueTimes.map((time) => {
                     if (time.isBreak) {
                         return (
@@ -62,11 +65,12 @@ export const TimetableGrid: React.FC<TimetableGridProps> = ({ slots, items, subj
                                     return <div key={targetKey} className="slot-empty" style={{ opacity: 0.2 }}></div>;
                                 }
 
+                                // Check if this slot has a timetable item mapped
                                 const mappedItem = items.find(
                                     (i) => i.day_of_week === day && i.start_time === time.start
                                 );
 
-                                const subject = mappedItem && subjects
+                                const subject = mappedItem
                                     ? subjects.find((sub) => sub.id === mappedItem.subject_id)
                                     : undefined;
 

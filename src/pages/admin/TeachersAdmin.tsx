@@ -6,14 +6,14 @@ import { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { teacherService } from '../../services/teacher.service';
-import { accountService } from '../../services/account.service';
+import '../../styles/Admin.css';
 import { FilterMatchMode } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
 import type { DataTableFilterMeta } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
 
 interface Teacher {
-  urlImage: string | null;
+  urlImage: string;
   name: string;
   email: string;
   registration: string;
@@ -25,34 +25,17 @@ interface Teacher {
 export default function TeachersAdmin() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [visible, setVisible] = useState(false);
-  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(
+    null,
+  );
 
   useEffect(() => {
     loadTeachers();
   }, []);
 
   const loadTeachers = async () => {
-    try {
-      const [teacherList, accountList] = await Promise.all([
-        teacherService.findAll(),
-        accountService.findAll(),
-      ]);
-
-      const enrichedTeachers: Teacher[] = teacherList.map((teacher: any) => {
-        const account = accountList.find((a) => a.username === teacher.email);
-        return {
-          ...teacher,
-          accountId: account ? account.id : 0,
-        };
-      });
-
-      setTeachers(enrichedTeachers);
-    } catch (error) {
-      console.warn('Falha ao enriquecer professores com contas:', error);
-      const teacherList = await teacherService.findAll();
-      setTeachers(teacherList.map(t => ({ ...t, accountId: (t as any).accountId || 0 })) as Teacher[]);
-    }
+    const response = await teacherService.findAll();
+    setTeachers(response as any);
   };
 
   const [filters, setFilters] = useState<DataTableFilterMeta>({
@@ -89,102 +72,22 @@ export default function TeachersAdmin() {
       email: '',
       registration: '',
       subject: '',
-      status: 'Ativo',
-      accountId: 0,
-    });
-    setIsEditing(false);
+      status: '',
+      accountId: 0
+    } as any);
     setVisible(true);
   };
 
-  const handleDelete = async (registration: string) => {
+  const handleDelete = async (accountId: number) => {
     if (window.confirm('Tem certeza que deseja excluir?')) {
-      await teacherService.delete(registration);
+      await teacherService.delete(accountId.toString());
       loadTeachers();
     }
   };
 
   const handleEdit = (teacher: Teacher) => {
-    setSelectedTeacher({ ...teacher });
-    setIsEditing(true);
+    setSelectedTeacher(teacher);
     setVisible(true);
-  };
-
-  const handleSave = async () => {
-    if (!selectedTeacher) return;
-
-    try {
-      if (isEditing) {
-        let accountId = selectedTeacher.accountId;
-
-        if (!accountId || accountId === 0) {
-          try {
-            const accounts = await accountService.findAll();
-            const account = accounts.find((a) => a.username === selectedTeacher.email);
-            if (account) {
-              accountId = account.id;
-            } else {
-              const newAcc = await accountService.create({
-                username: selectedTeacher.email,
-                password: '123456',
-                role: 'TEACHER',
-              });
-              accountId = newAcc.id;
-            }
-          } catch (e) {
-            console.error('Erro ao recuperar/criar conta para o professor:', e);
-          }
-        }
-
-        await teacherService.update(selectedTeacher.registration, {
-          ...selectedTeacher,
-          accountId: accountId || 0,
-        } as any);
-      } else {
-        // 1. Generate registration
-        const allTeachers = await teacherService.findAll();
-        let nextReg = 'PROF-001';
-
-        if (allTeachers.length > 0) {
-          const registrations = allTeachers
-            .map((t) => t.registration)
-            .filter((r) => r.startsWith('PROF-'));
-
-          if (registrations.length > 0) {
-            const maxNum = Math.max(
-              ...registrations.map((r) => {
-                const num = parseInt(r.replace('PROF-', ''), 10);
-                return isNaN(num) ? 0 : num;
-              }),
-            );
-            nextReg = `PROF-${String(maxNum + 1).padStart(3, '0')}`;
-          }
-        }
-
-        // 2. Create account
-        const account = await accountService.create({
-          username: selectedTeacher.email,
-          password: '123456',
-          role: 'TEACHER',
-        });
-
-        // 3. Create teacher
-        await teacherService.create({
-          ...selectedTeacher,
-          registration: nextReg,
-          accountId: account.id,
-        } as any);
-      }
-
-      alert('Professor salvo com sucesso!');
-      setVisible(false);
-      setSelectedTeacher(null);
-      loadTeachers();
-    } catch (error: any) {
-      console.error('Erro ao salvar professor:', error);
-      alert(
-        `Erro ao salvar professor: ${error.response?.data?.message || error.message}`,
-      );
-    }
   };
 
   const actions = (rowData: Teacher) => (
@@ -192,7 +95,7 @@ export default function TeachersAdmin() {
       <button className="btn-edit" onClick={() => handleEdit(rowData)}>
         <Pencil size={18} />
       </button>
-      <button className="btn-delete" onClick={() => handleDelete(rowData.registration)}>
+      <button className="btn-delete" onClick={() => handleDelete(rowData.accountId)}>
         <Trash2 size={18} />
       </button>
     </div>
@@ -217,7 +120,7 @@ export default function TeachersAdmin() {
             <p>Bem-vindo ao painel de controle de professores.</p>
           </div>
           <div className="header-buttons">
-            <button className="btn-save" onClick={handleCreate}>
+            <button className="btn-save" onClick={() => handleCreate()}>
               <CirclePlus size={18} /> Novo Registro
             </button>
           </div>
@@ -256,7 +159,7 @@ export default function TeachersAdmin() {
               field="urlImage"
               body={(rowData: Teacher) => (
                 <img
-                  src={rowData.urlImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(rowData.name)}&background=random`}
+                  src={rowData.urlImage}
                   alt={rowData.name}
                   style={{
                     width: '50px',
@@ -310,7 +213,9 @@ export default function TeachersAdmin() {
       </main>
 
       <Dialog
-        header={isEditing ? 'Editar Professor' : 'Criar Professor'}
+        header={
+          !selectedTeacher?.accountId ? 'Criar Professor' : 'Editar Professor'
+        }
         visible={visible}
         dismissableMask
         className="modal"
@@ -321,6 +226,20 @@ export default function TeachersAdmin() {
       >
         {selectedTeacher && (
           <div className="modal-fields">
+            <div className="field">
+              <label>Foto</label>
+              <InputText
+                value={selectedTeacher.urlImage}
+                className="input-modal"
+                onChange={(e) =>
+                  setSelectedTeacher({
+                    ...selectedTeacher,
+                    urlImage: e.target.value,
+                  })
+                }
+              />
+            </div>
+
             <div className="field">
               <label>Nome</label>
               <InputText
@@ -365,7 +284,7 @@ export default function TeachersAdmin() {
 
             <div className="field">
               <label>Status</label>
-              <select
+              <InputText
                 value={selectedTeacher.status}
                 className="input-modal"
                 onChange={(e) =>
@@ -374,28 +293,25 @@ export default function TeachersAdmin() {
                     status: e.target.value,
                   })
                 }
-              >
-                <option value="Ativo">Ativo</option>
-                <option value="Inativo">Inativo</option>
-              </select>
-            </div>
-
-            <div className="field">
-              <label>Foto (URL)</label>
-              <InputText
-                value={selectedTeacher.urlImage}
-                className="input-modal"
-                placeholder="https://..."
-                onChange={(e) =>
-                  setSelectedTeacher({
-                    ...selectedTeacher,
-                    urlImage: e.target.value,
-                  })
-                }
               />
             </div>
 
-            <button className="btn-save" onClick={handleSave}>
+            <button
+              className="btn-save"
+              onClick={async () => {
+                if (!selectedTeacher?.accountId) {
+                  await teacherService.create(selectedTeacher);
+                } else {
+                  await teacherService.update(
+                    selectedTeacher?.accountId.toString(),
+                    selectedTeacher,
+                  );
+                }
+                alert('Disciplina salva com sucesso!');
+                setVisible(false);
+                loadTeachers();
+              }}
+            >
               Salvar
             </button>
           </div>
