@@ -1,14 +1,14 @@
 export interface WeeklyAgenda {
     id: number;
-    weekName: string;
-    startDate: string;
-    endDate: string;
-    subjectId: number;
+    weekName: string; // e.g., "Semana 1 - Biologia"
+    startDate: string; // ISO String
+    endDate: string; // ISO String
+    subjectId: number; // Links to a Turma/Subject
 }
 
 export interface ClassMaterial {
     id: number;
-    weekId: number;
+    weekId: number; // Links to a WeeklyAgenda
     title: string;
     url: string;
     type: 'PDF' | 'VIDEO' | 'LINK';

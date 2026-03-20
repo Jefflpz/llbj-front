@@ -2,7 +2,7 @@ export const studentsData = [
     {
         id: '121001',
         name: 'Ana Beatriz Silva',
-        classId: 1,
+        classId: 1, // 9º Ano A
         urlImage: 'https://i.pravatar.cc/150?u=121001',
         email: 'ana.silva@escola.com',
         registration: 'MAT-202301',
@@ -65,7 +65,7 @@ export const studentsData = [
     {
         id: '221001',
         name: 'Lucas Ferreira',
-        classId: 2,
+        classId: 2, // 1º Ano EM B
         urlImage: 'https://i.pravatar.cc/150?u=221001',
         email: 'lucas.ferreira@escola.com',
         registration: 'MAT-202308',
@@ -83,7 +83,7 @@ export const studentsData = [
     {
         id: '321001',
         name: 'Gabriel Rocha',
-        classId: 3,
+        classId: 3, // 8º Ano C
         urlImage: 'https://i.pravatar.cc/150?u=321001',
         email: 'gabriel.rocha@escola.com',
         registration: 'MAT-202310',

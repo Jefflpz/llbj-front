@@ -14,15 +14,11 @@ export interface AccountResponseDTO {
 
 export const accountService = {
   findAll() {
-    return api.get<AccountResponseDTO[]>('/accounts').then((r) => r.data);
+    return api.get<AccountResponseDTO[]>('/accounts');
   },
 
   findById(id: number) {
-    return api.get<AccountResponseDTO>(`/accounts/${id}`).then((r) => r.data);
-  },
-
-  create(data: AccountRequestDTO) {
-    return api.post<AccountResponseDTO>('/accounts', data).then((r) => r.data);
+    return api.get<AccountResponseDTO>(`/accounts/${id}`);
   },
 
   delete(id: number) {

@@ -8,6 +8,7 @@ import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { teacherService } from '../../services/teacher.service';
+import '../../styles/Admin.css';
 import { accountService } from '../../services/account.service';
 import { subjectsService } from '../../services/subjects.service';
 import { observationService } from '../../services/observations.service';
@@ -19,7 +20,7 @@ import { InputText } from 'primereact/inputtext';
 import type { DataTableFilterMeta } from 'primereact/datatable';
 
 interface Teacher {
-  urlImage: string | null;
+  urlImage: string;
   name: string;
   email: string;
   registration: string;
@@ -106,10 +107,9 @@ export default function TeachersAdmin() {
       email: '',
       registration: '',
       subject: '',
-      status: 'Ativo',
-      accountId: 0,
-    });
-    setIsEditing(false);
+      status: '',
+      accountId: 0
+    } as any);
     setVisible(true);
   };
 
@@ -193,8 +193,7 @@ export default function TeachersAdmin() {
   };
 
   const handleEdit = (teacher: Teacher) => {
-    setSelectedTeacher({ ...teacher });
-    setIsEditing(true);
+    setSelectedTeacher(teacher);
     setVisible(true);
   };
 
@@ -403,7 +402,7 @@ export default function TeachersAdmin() {
             <p>Bem-vindo ao painel de controle de professores.</p>
           </div>
           <div className="header-buttons">
-            <button className="btn-save" onClick={handleCreate}>
+            <button className="btn-save" onClick={() => handleCreate()}>
               <CirclePlus size={18} /> Novo Registro
             </button>
           </div>
@@ -442,7 +441,7 @@ export default function TeachersAdmin() {
               field="urlImage"
               body={(rowData: Teacher) => (
                 <img
-                  src={rowData.urlImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(rowData.name)}&background=random`}
+                  src={rowData.urlImage}
                   alt={rowData.name}
                   style={{
                     width: '50px',

@@ -7,6 +7,15 @@ export interface QueryState<T> {
     refetch: () => void;
 }
 
+/**
+ * Hook genérico para chamadas assíncronas.
+ * Encapsula estado de loading, error e data.
+ * Quando a API real estiver pronta, os services podem retornar
+ * Promises reais e este hook continuará funcionando sem alterações.
+ *
+ * @param fetcher - Função que retorna uma Promise com os dados
+ * @param deps - Dependências que reexecutam o fetcher quando mudam
+ */
 export function useQuery<T>(
     fetcher: () => Promise<T>,
     deps: unknown[] = []
@@ -16,6 +25,7 @@ export function useQuery<T>(
     const [error, setError] = useState<string | null>(null);
     const [trigger, setTrigger] = useState(0);
 
+    // Stable ref to avoid stale closures
     const fetcherRef = useRef(fetcher);
     fetcherRef.current = fetcher;
 

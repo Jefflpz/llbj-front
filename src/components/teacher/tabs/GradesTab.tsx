@@ -19,6 +19,7 @@ export function GradesTab({ classId, studentsInClass }: GradesTabProps) {
 
     const [selectedSubjectId, setSelectedSubjectId] = useState<number | ''>('');
 
+    // Auto-select first subject
     useEffect(() => {
         if (subjects && subjects.length > 0 && selectedSubjectId === '') {
             setSelectedSubjectId(subjects[0].id);
@@ -31,6 +32,7 @@ export function GradesTab({ classId, studentsInClass }: GradesTabProps) {
     const [isSaving, setIsSaving] = useState(false);
     const [savedSuccess, setSavedSuccess] = useState(false);
 
+    // Initialize local grades when fetchedGrades changes
     useEffect(() => {
         if (!fetchedGrades) return;
         const newLocal: Record<string, { n1?: string; n2?: string; n3?: string }> = {};
@@ -44,6 +46,7 @@ export function GradesTab({ classId, studentsInClass }: GradesTabProps) {
         setLocalGrades(newLocal);
     }, [fetchedGrades]);
 
+    // Handle input change
     const handleGradeChange = (studentId: string, field: 'n1' | 'n2' | 'n3', value: string) => {
         setLocalGrades(prev => ({
             ...prev,

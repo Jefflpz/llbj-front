@@ -14,6 +14,7 @@ export function useAdmin() {
 
     useEffect(() => {
         if (user && user.role === 'ADMIN') {
+            // Atualmente podemos simular os dados do admin logado a partir do objeto user ou endpoint
             setAdmin({
                 name: user.username,
                 role: 'Administrator',

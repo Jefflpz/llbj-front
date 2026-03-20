@@ -27,6 +27,9 @@ export default function TeacherAgenda() {
     const loadAgendaData = async (period: string) => {
         setLoading(true);
         try {
+            // No mundo real, a API retornaria a grade específica do professor logado.
+            // Aqui usamos o mock carregando uma turma (ex. id 1) e filtramos os subjects pelo professor logado,
+            // ou apenas mostramos o do mock associado aos subjects dele.
             const allClasses = await timetableService.getClasses();
             const classId = allClasses.length > 0 ? allClasses[0].id : 1;
 
@@ -35,6 +38,10 @@ export default function TeacherAgenda() {
                 timetableService.getSlots(period),
                 timetableService.getTimetable(classId, period),
             ]);
+
+            // Filtramos as matérias em que o teacher_registration coincide ou apenas mostramos todas para demonstração
+            // Vamos filtrar para as matérias em que este teacher está associado, se tiver no mock. 
+            // Como é um mock, talvez o teacher logado não tenha os ids exatos, então para não ficar vazio, mostramos tudo que está na grade.
 
             setSubjects(_subjects);
             setSlots(_slots);
