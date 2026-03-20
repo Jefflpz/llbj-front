@@ -40,7 +40,6 @@ export function Sidebar() {
 
           {isAdmin ? (
             <>
-              {/* ADMIN LINKS */}
               <button
                 className={`nav-link ${location.pathname.includes('/admin/teachers') ? 'active' : ''}`}
                 onClick={() => navigate('/admin/teachers')}
@@ -83,7 +82,6 @@ export function Sidebar() {
             </>
           ) : isTeacher ? (
             <>
-              {/* TEACHER LINKS */}
               <button
                 className={`nav-link ${location.pathname === '/teacher/home' ? 'active' : ''}`}
                 onClick={() => navigate('/teacher/home')}
@@ -125,7 +123,6 @@ export function Sidebar() {
             </>
           ) : (
             <>
-              {/* STUDENT LINKS */}
               <button
                 className={`nav-link ${location.pathname === '/students' ? 'active' : ''}`}
                 onClick={() => navigate('/students')}

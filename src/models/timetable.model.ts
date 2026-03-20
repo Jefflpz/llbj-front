@@ -21,17 +21,17 @@ export interface Subject {
 }
 
 export interface TimetableSlot {
-    slot_key: string; // Ex: Segunda-07:00
-    day_of_week: string; // Ex: Segunda
-    start_time: string; // Ex: 07:00
-    end_time: string; // Ex: 07:50
+    slot_key: string;
+    day_of_week: string;
+    start_time: string;
+    end_time: string;
     is_break?: boolean;
 }
 
 export interface TimetableItem {
     id?: number;
     class_id: number;
-    period: string; // Ex: Manhã
+    period: string;
     day_of_week: string;
     start_time: string;
     end_time: string;

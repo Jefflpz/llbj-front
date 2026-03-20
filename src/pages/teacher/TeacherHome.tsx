@@ -86,10 +86,8 @@ export default function TeacherHome() {
                 </header>
 
                 <div className="teacher-home-body">
-                    {/* Left / Main Area */}
                     <div className="teacher-home-main">
 
-                        {/* Stats Cards */}
                         <div className="stats-row">
                             <div className="stat-card">
                                 <div className="stat-icon stat-icon--blue">
@@ -120,7 +118,6 @@ export default function TeacherHome() {
                             </div>
                         </div>
 
-                        {/* Quick Actions Section */}
                         <div className="quick-actions-section">
                             <h2 className="section-title">
                                 <Zap size={18} fill="#f59e0b" color="#f59e0b" />
@@ -128,7 +125,6 @@ export default function TeacherHome() {
                             </h2>
                             <div className="quick-actions-grid">
 
-                                {/* Lista de Alunos Card */}
                                 <div className="action-card">
                                     <div className="action-card-header">
                                         <div className="action-icon action-icon--blue">
@@ -145,7 +141,6 @@ export default function TeacherHome() {
                                     <button className="tag-btn tag-btn--blue" onClick={() => navigate('/teacher/turmas')}>+ OBSERVAÇÃO</button>
                                 </div>
 
-                                {/* Lançar Notas Card */}
                                 <div className="action-card action-card--highlight">
                                     <div className="action-card-header">
                                         <div className="action-icon action-icon--purple">
@@ -162,7 +157,6 @@ export default function TeacherHome() {
                                     <button className="btn-mass-launch">Lançamento em Massa</button>
                                 </div>
 
-                                {/* Baixar Boletim Card */}
                                 <div className="action-card">
                                     <div className="action-card-header">
                                         <div className="action-icon action-icon--green">
@@ -182,7 +176,6 @@ export default function TeacherHome() {
                         </div>
                     </div>
 
-                    {/* Right: Agenda do Dia */}
                     <aside className="teacher-agenda">
                         <div className="agenda-header">
                             <span className="agenda-title">AGENDA DO DIA</span>

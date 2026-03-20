@@ -7,7 +7,6 @@ import { useAgenda } from '../../../hooks/useAgenda';
 import { timetableService } from '../../../services/timetable.service';
 import './QuizFormModal.css';
 
-// Reusing same interface logic from old mock, adapted to the API
 export interface QuizQuestion {
     id?: string;
     title?: string;
@@ -42,10 +41,8 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
     const [selectedDay, setSelectedDay] = useState<string>('');
     const [availableDays, setAvailableDays] = useState<string[]>([]);
 
-    // Questions State
     const [questions, setQuestions] = useState<QuizQuestion[]>([]);
 
-    // API Hooks
     const { data: subjects = [] } = useSubjects(undefined, user?.registration);
     const { data: agendaData } = useAgenda(Number(subjectId) || 0);
 
@@ -56,7 +53,6 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
         if (subjectId) {
             const selectedSubject = (subjects || []).find(s => s.id === subjectId);
             if (selectedSubject && selectedSubject.classId) {
-                // Fetching timetable for the class, passing 'Manhã' directly or you can leave it blank
                 timetableService.getTimetable(selectedSubject.classId, 'Manhã')
                     .then(items => {
                         const subjectItems = items.filter(item => item.subject_id === Number(subjectId));
@@ -82,7 +78,6 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
             setWeekId(quizToEdit.weekId || '');
             setMaterialId(quizToEdit.materialId || '');
 
-            // Map the questions back to the form format
             setQuestions(quizToEdit.questions.map((q: any) => ({
                 text: q.text || q.title || '',
                 options: (q.options || []).map((o: any) => ({
@@ -158,9 +153,7 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
 
     const handleMarkCorrect = (qIndex: number, oIndex: number) => {
         const updated = [...questions];
-        // reset all to false
         updated[qIndex].options.forEach(opt => opt.isCorrect = false);
-        // set selected to true
         updated[qIndex].options[oIndex].isCorrect = true;
         setQuestions(updated);
     };
@@ -248,7 +241,7 @@ export function QuizFormModal({ isOpen, onClose, onSave, quizToEdit, preSelected
                                 value={subjectId}
                                 onChange={e => {
                                     setSubjectId(e.target.value === '' ? '' : Number(e.target.value));
-                                    setSelectedDay(''); // Reset day on subject change
+                                    setSelectedDay('');
                                 }}
                                 disabled={!!preSelectedSubjectId}
                             >

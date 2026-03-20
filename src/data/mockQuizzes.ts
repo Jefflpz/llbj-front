@@ -1,34 +1,29 @@
 export interface QuizOption {
-    id: string; // UUID to manage dynamically
+    id: string;
     text: string;
     isCorrect: boolean;
 }
 
 export interface QuizQuestion {
-    id: string; // UUID
+    id: string;
     title: string;
     options: QuizOption[];
 }
 
 export interface Quiz {
-    id: string; // UUID
+    id: string;
     title: string;
     description: string;
     score: number;
     releaseDate: string | null;
     deadline: string | null;
-
-    // Associations
-    subjectId: number | null; // Turma / Subject ID
-    weekId: number | null; // Weekly Agenda ID
-    materialId: number | null; // Class Material ID
-
+    subjectId: number | null;
+    weekId: number | null;
+    materialId: number | null;
     questions: QuizQuestion[];
-
     createdAt: string;
 }
 
-// Emulate a DB table
 export let quizzesData: Quiz[] = [
     {
         id: 'quiz-1',
@@ -56,7 +51,6 @@ export let quizzesData: Quiz[] = [
     }
 ];
 
-// Transaction Methods to simulate Database Actions
 export const addQuiz = (newQuiz: Quiz) => {
     quizzesData = [newQuiz, ...quizzesData];
 };

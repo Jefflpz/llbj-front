@@ -16,37 +16,45 @@ export default function StudentHome() {
   const [period, setPeriod] = useState<string>('Manhã');
   const { student, loading } = useStudent();
 
-  const handleDownloadReport = async () => {
-    if (!student) return;
-
+  async function handleDownloadReport() {
+    const studentId = (student as any)?.studentId || (student as any)?.id || (student as any)?.registration;
+    if (!student || !studentId) return;
     setIsDownloading(true);
     try {
-      const [subRes, gradeRes] = await Promise.all([
-        api.get('/subjects'),
-        api.get('/grades'),
-      ]);
+      const res = await api.get(`/grades?studentId=${studentId}`);
+      const allGrades: any[] = res.data;
 
-      console.log(subRes.data)
-      console.log(gradeRes.data)
-
-      const subjectsList = Array.isArray(subRes.data) ? subRes.data : (subRes.data.content || []);
-      const gradesList = Array.isArray(gradeRes.data) ? gradeRes.data : (gradeRes.data.content || []);
-
-      const mySubjects = subjectsList.filter(
-        (s: any) => s.classId === ((student as any).classId || (student as any).class_id),
-      );
-      const myGrades = gradesList.filter(
-        (g: any) => g.studentId === ((student as any).studentId || student.id),
+      // Garante que só entram notas do aluno logado
+      const filtered = allGrades.filter(
+        (g: any) => String(g.studentId) === String(studentId),
       );
 
-      reportService.generateBoletim(student, mySubjects, myGrades);
+      // Deduplicação por subjectId: mantém o registro com mais notas preenchidas
+      const bySubject = new Map<number, any>();
+      for (const g of filtered) {
+        const existing = bySubject.get(g.subjectId);
+        if (!existing) {
+          bySubject.set(g.subjectId, g);
+        } else {
+          const existingFilled = [existing.n1, existing.n2, existing.n3].filter(
+            (v) => v != null,
+          ).length;
+          const newFilled = [g.n1, g.n2, g.n3].filter(
+            (v) => v != null,
+          ).length;
+          if (newFilled > existingFilled) bySubject.set(g.subjectId, g);
+        }
+      }
+
+      const grades = Array.from(bySubject.values());
+      reportService.generateBoletim(student, grades);
     } catch (err) {
       console.error('Erro ao gerar boletim:', err);
-      alert('Erro ao gerar PDF. Tente novamente.');
     } finally {
       setIsDownloading(false);
     }
-  };
+  }
+
 
   return (
     <div className="timetable-admin-page">
