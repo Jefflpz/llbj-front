@@ -24,4 +24,8 @@ export const accountService = {
   create(data: AccountRequestDTO) {
     return api.post<AccountResponseDTO>('/accounts', data).then((r) => r.data);
   },
+
+  delete(id: number) {
+    return api.delete(`/accounts/${id}`).then(() => undefined);
+  },
 };

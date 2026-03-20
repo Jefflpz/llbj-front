@@ -1,16 +1,22 @@
 import { Sidebar } from '../../components/sidebar/Sidebar';
 import '../../styles/Admin.css';
 import { Breadcrumbs } from '../../components/common/Breadcrumbs';
-import { CirclePlus, Pencil, Trash2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { CirclePlus, Pencil, Trash2, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Toast } from 'primereact/toast';
+import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { teacherService } from '../../services/teacher.service';
 import { accountService } from '../../services/account.service';
+import { subjectsService } from '../../services/subjects.service';
+import { observationService } from '../../services/observations.service';
+import { gradesService } from '../../services/grades.service';
+import { agendaService } from '../../services/agenda.service';
+import { quizzesService } from '../../services/quizzes.service';
 import { FilterMatchMode } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
 import type { DataTableFilterMeta } from 'primereact/datatable';
-import { Dialog } from 'primereact/dialog';
 
 interface Teacher {
   urlImage: string | null;
@@ -27,6 +33,11 @@ export default function TeachersAdmin() {
   const [visible, setVisible] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
+  const [deleteVisible, setDeleteVisible] = useState(false);
+  const [teacherToDelete, setTeacherToDelete] = useState<Teacher | null>(null);
+  const [successData, setSuccessData] = useState({ title: '', message: '' });
+  const toast = useRef<Toast>(null);
 
   useEffect(() => {
     loadTeachers();
@@ -40,7 +51,7 @@ export default function TeachersAdmin() {
       ]);
 
       const enrichedTeachers: Teacher[] = teacherList.map((teacher: any) => {
-        const account = accountList.find((a) => a.username === teacher.email);
+        const account = accountList.find((a: any) => a.username === teacher.email);
         return {
           ...teacher,
           accountId: account ? account.id : 0,
@@ -51,7 +62,12 @@ export default function TeachersAdmin() {
     } catch (error) {
       console.warn('Falha ao enriquecer professores com contas:', error);
       const teacherList = await teacherService.findAll();
-      setTeachers(teacherList.map(t => ({ ...t, accountId: (t as any).accountId || 0 })) as Teacher[]);
+      setTeachers(
+        (teacherList as any[]).map((t: any) => ({
+          ...t,
+          accountId: (t as any).accountId || 0,
+        })) as Teacher[],
+      );
     }
   };
 
@@ -96,10 +112,80 @@ export default function TeachersAdmin() {
     setVisible(true);
   };
 
-  const handleDelete = async (registration: string) => {
-    if (window.confirm('Tem certeza que deseja excluir?')) {
-      await teacherService.delete(registration);
+  const handleDelete = (rowData: Teacher) => {
+    setTeacherToDelete(rowData);
+    setDeleteVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!teacherToDelete) return;
+    setDeleteVisible(false);
+
+    try {
+      // 1. Delete associated observations
+      const obs = await observationService.findAll();
+      const teacherObs = obs.filter(
+        (o) => o.teacherRegistration === teacherToDelete.registration,
+      );
+      for (const o of teacherObs) {
+        await observationService.delete(o.id);
+      }
+
+      // 2. Delete associated subjects and their dependencies
+      const subjects = await subjectsService.findByTeacher(
+        teacherToDelete.registration,
+      );
+      for (const s of subjects) {
+        // 2.1 Delete grades
+        const grades = await gradesService.findBySubject(s.id);
+        for (const g of grades) {
+          await gradesService.delete(g.studentId, s.id);
+        }
+
+        // 2.2 Delete quizzes
+        const quizzes = await quizzesService.findBySubject(s.id);
+        for (const q of quizzes) {
+          await quizzesService.delete(q.id);
+        }
+
+        // 2.3 Delete agendas and materials
+        const agendas = await agendaService.findAgendas(s.id);
+        for (const a of agendas) {
+          const materials = await agendaService.findMaterials(a.id);
+          for (const m of materials) {
+            await agendaService.deleteMaterial(m.id);
+          }
+          await agendaService.deleteAgenda(a.id);
+        }
+
+        // 2.4 Finally delete the subject
+        await subjectsService.delete(s.id);
+      }
+
+      // 3. Delete the teacher
+      await teacherService.delete(teacherToDelete.registration);
+
+      // 4. Delete the account
+      if (teacherToDelete.accountId && teacherToDelete.accountId !== 0) {
+        await accountService.delete(teacherToDelete.accountId);
+      }
+
+      setSuccessData({
+        title: 'Excluído!',
+        message: 'O professor e todos os dados associados foram removidos com sucesso.',
+      });
+      setSuccessVisible(true);
       loadTeachers();
+    } catch (error: any) {
+      console.error('Erro ao excluir professor:', error);
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Erro',
+        detail: `Erro ao excluir professor: ${error.response?.data?.message || error.message}`,
+        life: 5000,
+      });
+    } finally {
+      setTeacherToDelete(null);
     }
   };
 
@@ -145,13 +231,13 @@ export default function TeachersAdmin() {
         let nextReg = 'PROF-001';
 
         if (allTeachers.length > 0) {
-          const registrations = allTeachers
-            .map((t) => t.registration)
-            .filter((r) => r.startsWith('PROF-'));
+          const registrations = (allTeachers as any[])
+            .map((t: any) => t.registration as string)
+            .filter((r: string) => r.startsWith('PROF-'));
 
           if (registrations.length > 0) {
             const maxNum = Math.max(
-              ...registrations.map((r) => {
+              ...registrations.map((r: string) => {
                 const num = parseInt(r.replace('PROF-', ''), 10);
                 return isNaN(num) ? 0 : num;
               }),
@@ -175,15 +261,22 @@ export default function TeachersAdmin() {
         } as any);
       }
 
-      alert('Professor salvo com sucesso!');
+      setSuccessData({
+        title: isEditing ? 'Alterado!' : 'Cadastrado!',
+        message: `O professor foi ${isEditing ? 'alterado' : 'cadastrado'} com sucesso no sistema.`,
+      });
+      setSuccessVisible(true);
       setVisible(false);
       setSelectedTeacher(null);
       loadTeachers();
     } catch (error: any) {
       console.error('Erro ao salvar professor:', error);
-      alert(
-        `Erro ao salvar professor: ${error.response?.data?.message || error.message}`,
-      );
+      toast.current?.show({
+        severity: 'error',
+        summary: 'Erro',
+        detail: `Erro ao salvar professor: ${error.response?.data?.message || error.message}`,
+        life: 5000,
+      });
     }
   };
 
@@ -192,7 +285,10 @@ export default function TeachersAdmin() {
       <button className="btn-edit" onClick={() => handleEdit(rowData)}>
         <Pencil size={18} />
       </button>
-      <button className="btn-delete" onClick={() => handleDelete(rowData.registration)}>
+      <button
+        className="btn-delete"
+        onClick={() => handleDelete(rowData)}
+      >
         <Trash2 size={18} />
       </button>
     </div>
@@ -200,6 +296,63 @@ export default function TeachersAdmin() {
 
   return (
     <div className="timetable-admin-page">
+      <Toast ref={toast} />
+
+      <Dialog
+        visible={deleteVisible}
+        onHide={() => setDeleteVisible(false)}
+        closable={false}
+        showHeader={false}
+        className="custom-confirm-dialog"
+        style={{ width: '450px' }}
+      >
+        <div className="delete-modal-content">
+          <div className="delete-modal-icon-container">
+            <AlertTriangle size={32} />
+          </div>
+          <h3 className="delete-modal-title">Confirmar Exclusão</h3>
+          <p className="delete-modal-text">
+            Tem certeza que deseja excluir o professor{' '}
+            <strong>{teacherToDelete?.name}</strong>?
+            <br />
+            Esta ação é irreversível e removerá todas as disciplinas e notas
+            vinculadas.
+          </p>
+          <div className="delete-modal-actions">
+            <button
+              onClick={() => setDeleteVisible(false)}
+              className="btn-delete-cancel"
+            >
+              Cancelar
+            </button>
+            <button onClick={confirmDelete} className="btn-delete-confirm">
+              Sim, Excluir
+            </button>
+          </div>
+        </div>
+      </Dialog>
+
+      <Dialog
+        visible={successVisible}
+        onHide={() => setSuccessVisible(false)}
+        closable={false}
+        showHeader={false}
+        className="custom-success-dialog"
+        style={{ width: '400px' }}
+      >
+        <div className="success-modal-content">
+          <CheckCircle2 size={80} className="success-modal-icon" />
+          <h3 className="success-modal-title">{successData.title}</h3>
+          <p className="success-modal-text">{successData.message}</p>
+          <button
+            onClick={() => setSuccessVisible(false)}
+            className="btn-success-finish"
+          >
+            Entendido
+          </button>
+        </div>
+      </Dialog>
+
       <Sidebar />
       <main className="timetable-content">
         <header className="timetable-header">
